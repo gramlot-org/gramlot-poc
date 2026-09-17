@@ -1,5 +1,11 @@
 # Gramlot
 
+> **Being phased out:** `gramlot-poc` is being progressively retired. Its material
+> will be cleaned up, reorganized and transferred in reviewed increments to
+> [Gramlot](https://github.com/gramlot-org/gramlot), the consolidated framework.
+> This repository remains available for experiments, existing examples and tests
+> during the transition.
+
 <img src="https://raw.githubusercontent.com/genropy/gramlot/main/assets/gramlot-logo.png" alt="Gramlot logo" width="180">
 
 **GRAMmar for Live Object Trees**
