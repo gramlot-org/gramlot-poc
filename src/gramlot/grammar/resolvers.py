@@ -23,9 +23,10 @@ class ResolverAuthoring:
         self.dataRpc(storepath, rpcmethod, root=root, path=path, _on_start=True)
         return self._declaration('fileSystemTree', store=f'^{storepath}', **attributes)
 
-    def relationTree(self, table, *, rpcmethod='relation_tree', storepath=None,
+    def relationTree(self, table, *, rpcmethod='relation_tree', storepath=None, adapter=None,
+                     maxDepth=3, maxNodes=100, statuspath=None,
                      omit='_', dosort=True, groupDescending=False, **attributes):
-        """Declare an RPC-backed relationTree component in the current Data scope."""
+        """Declare the existing relationTree with an RPC or local model provider."""
         if not isinstance(table, str) or not table.strip():
             raise TypeError('relationTree requires a table name or binding')
         if 'store' in attributes:
@@ -36,8 +37,15 @@ class ResolverAuthoring:
             storepath = f'_relationTrees.tree_{serial}'
         if not isinstance(storepath, str) or not storepath or storepath.startswith(('^', '=')):
             raise TypeError('storepath must be an unbound Data path')
-        self.dataRpc(storepath, rpcmethod, table=table, omit=omit, dosort=dosort,
-                     groupDescending=groupDescending, _on_start=True)
+        if adapter is not None:
+            if groupDescending:
+                raise ValueError('Field grouping is GenroPy-specific, not part of the generic model')
+            attributes['modelDialect'] = 'generic'
+            self.dataRelationTree(storepath, adapter=adapter, dbtable=table,
+                                  maxDepth=maxDepth, maxNodes=maxNodes, statuspath=statuspath)
+        else:
+            self.dataRpc(storepath, rpcmethod, table=table, omit=omit, dosort=dosort,
+                         groupDescending=groupDescending, _on_start=True)
         return self._declaration('relationTree', table=table, store=f'^{storepath}', **attributes)
 
     def _http_resolver(self, kind, destination, url, **options):
@@ -59,7 +67,7 @@ class ResolverAuthoring:
         on_start = options.pop('_on_start', True)
         props = dict(destination=destination, url=url, **options)
         encoded = ','.join(f'{json.dumps(key)}:{encode(value, key not in ("destination", "status", "_onResult", "_onError"))}' for key, value in props.items())
-        return self.dataController(f'genro.resolvers.load(this, {json.dumps(kind)}, {{{encoded}}});',
+        return self.dataController(f'gramlot.resolvers.load(this, {json.dumps(kind)}, {{{encoded}}});',
                                    _on_start=on_start, **bindings)
 
     def urlResolver(self, destination, url, **options):
@@ -74,15 +82,15 @@ class ResolverAuthoring:
         Produces navigation, request/response Bags and response grid structure.
         Pair with openApiForm in the same datapath. No Python HTTP request runs.
         """
-        self.dataController('genro.openapi.prepare(this, {schema});', schema=schema)
+        self.dataController('gramlot.openapi.prepare(this, {schema});', schema=schema)
         self.dataController(
-            'genro.openapi.execute(this, {_triggerpars, genro});',
+            'gramlot.openapi.execute(this, {_triggerpars, gramlot});',
             send='^send', cancel='^cancel', selection=selection)
-        self.dataController('genro.openapi.response(this, {response});', response='^response')
+        self.dataController('gramlot.openapi.response(this, {response});', response='^response')
 
     def openApiForm(self, schema='=schema', selection='^selection', **attributes):
         """Generate bound form Source from the selected OpenAPI operation."""
         pane = self.div(**attributes)
-        pane.dataController('genro.openapi.select(this, {schema, selection});',
+        pane.dataController('gramlot.openapi.select(this, {schema, selection});',
                             schema=schema, selection=selection)
         return pane

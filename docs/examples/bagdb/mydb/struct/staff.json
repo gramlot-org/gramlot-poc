@@ -1,0 +1,119 @@
+{
+  "table": "staff",
+  "sourceTable": "invc.staff",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "email": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Email"
+    },
+    "first_name": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "First Name"
+    },
+    "hire_date": {
+      "dtype": "T",
+      "sourceDtype": "D",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Hire Date"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "last_name": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Last Name"
+    },
+    "role_code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Role",
+      "sourceReference": "staff_role.code",
+      "references": "staff_role.code"
+    },
+    "state": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "State",
+      "sourceReference": "invc.state.code",
+      "references": "state.code"
+    },
+    "user_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "User",
+      "sourceReference": "adm.user.id",
+      "references": "user.id"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "full_name",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "state_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "role_description",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "region_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "username",
+      "kind": "aliasColumn"
+    }
+  ]
+}

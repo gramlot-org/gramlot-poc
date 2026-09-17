@@ -1,5 +1,121 @@
 # Gramlot project memory
 
+**Repository consolidation direction — 2026-09-16:** the owner chooses a living
+`gramlot-poc` (this repository renamed, preserving pages/tests and new experiments)
+and a new clean `gramlot` for reviewed ports. This supersedes consolidation inside
+one repository's `versione2/`; that directory is currently documentation staging.
+The PoC keeps the evolution guide; the destination owns product documentation and
+the authoritative constitution. Separate LLMs prepare and review ports; owner
+decisions govern constitutional amendments. See the
+[working agreement](../../versione2/docs/00-consolidating-gramlot.md#12-repository-amendment--2026-09-16).
+The local and GitHub split is executed. The PoC retains the existing identity;
+the clean product owns a new history and documentation-only seed. See the latest
+[workspace map](workspace-map.md#repository-split-completed--2026-09-16).
+
+**HTML rich editor — 2026-09-15:** the shared IDE now uses Jodit Community
+4.13.9 (MIT), loaded lazily from packaged local assets. The Python `/page/html-editor/` scratch
+example exercises the toolbar and shared Code/Preview/Revert state. Markdown
+retains its separate editor. See the [IDE guide](../guides/gramlot-ide.md#html-views--jodit-community).
+
+**Inventory workspace and Markdown IDE — 2026-09-15:** the master example
+navigation includes `/page/gramlot-inventory/`, rooted at `gramlot_inventory`.
+The shared IDE supports Raw, sandboxed Preview and ProseMirror Rich text for
+Markdown. Tables and unsupported structures remain source-backed blocks edited
+in Raw. See [behavior and limits](../guides/gramlot-ide.md#markdown-and-the-inventory-workspace).
+
+**Component and recipe management guide — 2026-09-15:** owner-requested
+English [review draft](../guides/component-controller-recipe-management.md)
+consolidates component/controller/recipe distinctions, bases and mixins,
+database proxies, integration boundaries and inventory decisions. It explicitly
+separates current implementation from planned APIs and ongoing census work.
+
+**dataRecord/dataSelection legacy audit — 2026-09-15:** inspected Python helpers,
+shared client RPC execution and server bodies; inventoried 25 record and 46
+selection parameters plus open kwargs families. Minimum/optional/Genropy groups
+are proposals, not approved implementations. See the
+[audit](../development/datarecord-dataselection-legacy-audit-2026-09-15.md).
+
+**Endpoint proxy chains — 2026-09-15:** dotted names such as `aaa.bbb.ccc`
+traverse recursively registered proxies; only the final decorated endpoint is
+invoked. `DbHandler`, its backend hooks and `DbPageMixin` now have detailed
+docstrings and a [shared guide](../guides/database-handlers-and-proxies.md).
+
+**Minimal SQLite dbSelect — 2026-09-15:** local prototype implemented with
+host-independent `DbHandler` / `DbPageMixin`, an optional read-only
+`SqliteDbHandler` called through the registered `dbhandler.dbselect` proxy and Python-first invoice customer example. Standard
+search falls back from prefix to containment only when prefix returns no rows;
+both case modes are supported. Advanced Genropy capabilities remain separate.
+See [setup and scope](../examples/sqlite-dbselect/README.md). No release implied.
+
+## Django integration ownership — 2026-09-15
+
+The owner moved all active Django adapter code, its tests, maintained guides and
+Django/Bakery examples to the sibling `gramlot-django` repository. Consumers now
+import `gramlot_django`; core no longer supplies `gramlot.contrib.django` or the
+`django` extra. Generic Python pages, shared host services and browser runtime
+remain here. Earlier Django ownership statements below are historical.
+This is a local migration, not a publication.
+
+
+**Integration repository boilerplates — 2026-09-15:** the owner selected
+`genro-asgi` as the repository template. Private `gramlot-org/gramlot-fastapi`,
+`gramlot-org/gramlot-django` and `gramlot-org/gramlot-genro-asgi` repositories
+now have Python src-layout scaffolds, Hatchling metadata, Apache 2.0 notices,
+development extras and uv locks, Sphinx documentation, hooks and GitHub checks.
+Both main and develop are pushed; canonical checkouts are siblings of this
+framework under `/Users/gporcari/Sviluppo/gramlot`. These are pre-alpha
+boilerplates (0.0.0.dev0), not implemented hosts or migrated examples.
+Local lint, documentation, distributions and isolated wheel imports passed.
+
+
+**Workspace relocation — 2026-09-15:** the canonical framework is now
+`/Users/gporcari/Sviluppo/gramlot/gramlot`. All previous active checkout paths
+remain compatibility links. Repository files and local conversation history
+have recovery snapshots. See [workspace map](workspace-map.md#relocation-completed--2026-09-15)
+for the five moved checkouts and desktop-session caveats.
+
+
+**Repository ownership — 2026-09-15:** the owner requested transfer to the new
+`gramlot-org` GitHub organization. `gramlot`, `gramlot-site` and
+`gramlot-rosetta` have been transferred and their repository IDs verified;
+the site remains private and the other two public. This supersedes the
+2026-09-09 decision to remain under `genropy`. The owner also requires seven
+distinct presentation scenarios; see [open work](open-work.md#presentation-sites--owner-direction-2026-09-15).
+
+**Genro ASGI GUI — 2026-09-14:** the owner chooses `genro-asgi[gui]`, with
+hosting and Python management pages in its existing ServerApplication. The
+local monitor PoC uses Gramlot; no reverse dependency is introduced. See
+[implementation and verification](../development/server-application-gui-2026-09-14.md).
+
+**Scoped autocomplete — noted, 2026-09-14:** owner proposes optional policy on
+page, Source branch or field, with the most specific setting taking precedence
+and propagation to native controls. Implementation deferred; see
+[open work](open-work.md#scoped-autocomplete-policy--proposal-recorded-2026-09-14).
+
+**Python `@recipe` — planned, 2026-09-14:** owner requests builder shorthand
+`pane.my_recipe(...)` for a decorated Python routine that expands ordinary
+Source before transport. Implementation explicitly deferred. See the
+[decorator plan](../development/python-recipe-decorator-plan-2026-09-14.md).
+
+**Inside textBox — 2026-09-14:** owner-requested Italian HTML guide for readers
+new to Web Components, from native input through encapsulation, registration,
+Source/Data binding and Python usage. Based on the current implementation, with
+explicit manifesto limits: [read the guide](../guides/textbox/index.html).
+
+**Source version 0.1.5 — 2026-09-13:** version advanced after the page-object
+rename, with aligned Python/npm metadata. The new authoring context is `gramlot`,
+without a `genro` alias. This is not a release or deployment; see
+[release status](../release.md).
+
+**Page object rename — owner decision, 2026-09-13:** the page-management object
+will be called `gramlot` instead of `genro` to distinguish it from legacy Genropy.
+The [cross-repository migration plan](../development/gramlot-page-object-rename-plan-2026-09-13.md)
+covers runtime, generated scripts, tests, examples, documentation and the site.
+Implementation completed locally from baseline `e2127a1`; runtime, generated
+scripts, examples, tests and prepared browser assets now use `gramlot`.
+Owner correction: this is solely a rename; Gramlot ignores `genro`. Legacy
+interoperability and coexistence tests are outside the plan.
+
 **Recipe composition experiment — 2026-09-13:** the owner distinguishes single-node
 adapted Web Components from recipes expanding ordinary Source nodes, with a
 standalone JS implementation and reusable Python source in the manifesto. The tiny

@@ -56,6 +56,62 @@ root.{name}(value='^locked', lbl='Disabled', disabled=True, margin_top='12px'{op
 root.div('^empty', mask='Edited null value: %s', margin_top='16px')
 """)
 
+case('callbackSelect', 'Local callback provider',
+     'Type a letter and select a result. The stored value is the row identity and the caption is published separately.', """
+root.data('choice', 'a')
+root.callbackSelect(value='^choice', selectedCaption='choiceCaption', lbl='Choice', callback='''
+    const rows = [{id: 'a', name: 'Alpha'}, {id: 'b', name: 'Beta'}, {id: 'g', name: 'Gamma'}];
+    const query = String(kw._querystring || '').toLowerCase();
+    return {rows: rows.filter(row => kw._id != null ? row.id === String(kw._id)
+        : row.name.toLowerCase().includes(query)), identifier: 'id', caption: 'name'};
+''')
+root.div('^choice', mask='Stored identity: %s', margin_top='16px')
+root.div('^choiceCaption', mask='Caption: %s')
+""")
+case('callbackSelect', 'Reactive local choices',
+     'Choose a team, then a person. Changing team clears the dependent identity before the next search.', """
+root.data('team', 'design')
+root.filteringSelect(value='^team', values='design:Design,engineering:Engineering', lbl='Team')
+root.callbackSelect(value='^person', team='=team', lbl='Person', callback='''
+    const rows = [{id: 'ada', name: 'Ada', team: 'design'},
+                  {id: 'linus', name: 'Linus', team: 'engineering'}];
+    const query = String(kw._querystring || '').toLowerCase();
+    return {rows: rows.filter(row => row.team === kw.team && (kw._id != null
+        ? row.id === String(kw._id) : row.name.toLowerCase().includes(query))),
+        identifier: 'id', caption: 'name'};
+''')
+root.dataController("this.SET('person', null);", team='^team')
+root.div('^person', mask='Stored identity: %s', margin_top='16px')
+""")
+
+case('chart', 'Bound bar chart',
+     'Bars render from the rows Bag. Selecting a bar writes its stable row key.', """
+rows = Bag()
+rows.set_item('jan', Bag(dict(month='January', revenue=120)))
+rows.set_item('feb', Bag(dict(month='February', revenue=160)))
+rows.set_item('mar', Bag(dict(month='March', revenue=135)))
+root.data('rows', rows)
+root.data('selection', 'jan')
+root.data('structure', Bag(dict(title='Monthly revenue', chartType='bar',
+    captionField='month', valueField='revenue', color='#4285b4', showValues=True)))
+root.chart(store='^rows', structpath='structure', selectedKey='^selection', height='280px')
+root.div('^selection', mask='Selected row: %s', margin_top='12px')
+""")
+case('chart', 'Reactive pie chart',
+     'The pie and legend update when the selected metric changes.', """
+rows = Bag()
+rows.set_item('north', Bag(dict(area='North', sales=48, cost=31)))
+rows.set_item('south', Bag(dict(area='South', sales=36, cost=24)))
+rows.set_item('west', Bag(dict(area='West', sales=29, cost=19)))
+root.data('rows', rows)
+root.data('metric', 'sales')
+root.data('structure', Bag(dict(title='Regional totals', chartType='pie',
+    captionField='area', valueField='sales', color='#4285b4', showValues=True)))
+root.filteringSelect(value='^metric', values='sales:Sales,cost:Cost', lbl='Metric')
+root.dataController("this.setRelativeData('structure.valueField', metric);", metric='^metric')
+root.chart(store='^rows', structpath='structure', height='280px', margin_top='12px')
+""")
+
 case('textBox', 'Required and length', 'Leave an empty field or enter more than five characters to see validation.', """
 root.textBox(value='^name', lbl='Short name', validate_notnull=True, validate_len='0:5')
 root.div('^name', mask='Stored: %s', margin_top='16px')
@@ -168,8 +224,8 @@ root.data('selected', '{initial}')
 {buttons}pages = root.{host}(nodeId='pages', selectedPage='^selected', height='120px')
 pages.{child}(pageName='details', title='Details').div('Customer details')
 pages.{child}(pageName='history', title='History').div('Customer history')
-root.button('Next', action="genro.publish('pages_switchPage', '*next*');")
-root.button('Previous', action="genro.publish('pages_switchPage', '*prev*');")
+root.button('Next', action="gramlot.publish('pages_switchPage', '*next*');")
+root.button('Previous', action="gramlot.publish('pages_switchPage', '*prev*');")
 root.dataController("this.SET('visible', pageName);", subscribe_pages_showing=True)
 root.div('^selected', mask='Selected: %s', margin_top='16px')
 root.div('^visible', mask='Showing: %s')
@@ -466,8 +522,8 @@ def prepare(output, catalogue):
     for collection in catalogue['collections']:
         for component in collection['components']:
             name = component['name']
-            if name == 'dbSelect':
-                # Server-only example is hosted at /database/states/, not in a standalone frame.
+            if name in ('dbSelect', 'remoteSelect', 'relationTree', 'fileSystemTree', 'gramlotIde'):
+                # Server-backed components are hosted examples, not standalone frames.
                 continue
             if name not in CASES:
                 raise ValueError(f'Missing gallery cases for {name}')

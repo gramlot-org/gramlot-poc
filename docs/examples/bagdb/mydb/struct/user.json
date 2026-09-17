@@ -1,0 +1,236 @@
+{
+  "table": "user",
+  "sourceTable": "adm.user",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "auth_tags": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Authorization Tags"
+    },
+    "avatar_last_2fa_otp": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Last 2fa"
+    },
+    "avatar_rootpage": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Root Page"
+    },
+    "avatar_secret_2fa": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Secret 2fa"
+    },
+    "custom_fields": {
+      "dtype": "T",
+      "sourceDtype": "X",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Custom fields"
+    },
+    "custom_menu": {
+      "dtype": "T",
+      "sourceDtype": "X",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Custom menu"
+    },
+    "email": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Email"
+    },
+    "firstname": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "First name"
+    },
+    "group_code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Group",
+      "sourceReference": "group.code"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "Id"
+    },
+    "language": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Language",
+      "sourceReference": "adm.language.code"
+    },
+    "lastname": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Last name"
+    },
+    "locale": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Default locale"
+    },
+    "md5pwd": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "PasswordMD5"
+    },
+    "menu_root_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "menu_root_id"
+    },
+    "mobile": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Mobile"
+    },
+    "photo": {
+      "dtype": "T",
+      "sourceDtype": "P",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Photo"
+    },
+    "preferences": {
+      "dtype": "T",
+      "sourceDtype": "X",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Preferences"
+    },
+    "registration_date": {
+      "dtype": "T",
+      "sourceDtype": "D",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Registration Date"
+    },
+    "sms_login": {
+      "dtype": "B",
+      "sourceDtype": "B",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Sms login"
+    },
+    "sms_number": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Sms Number"
+    },
+    "status": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Status"
+    },
+    "username": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Username"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "all_tags",
+      "kind": "pyColumn"
+    },
+    {
+      "name": "cover_logo",
+      "kind": "pyColumn"
+    },
+    {
+      "name": "square_logo",
+      "kind": "pyColumn"
+    },
+    {
+      "name": "custom_groups",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "other_groups",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "all_groups",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "fullname",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "recover_pwd_email",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "watermark_notice",
+      "kind": "formulaColumn"
+    }
+  ]
+}

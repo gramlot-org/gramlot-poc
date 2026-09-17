@@ -37,5 +37,5 @@ class TestRuntimeOwnership:
         self._check("rebuild")
 
     def test_page_disposal_owns_inspector_and_shortcut(self):
-        # wf:contract: The page exposes its developer-tool owner as genro.dev; disposing the page stops its inspector and shortcut without affecting another page. Remount and repeated old disposal preserve the replacement.
+        # wf:contract: The page exposes its developer-tool owner as gramlot.dev; disposing the page stops its inspector and shortcut without affecting another page. Remount and repeated old disposal preserve the replacement.
         self._check("inspector")

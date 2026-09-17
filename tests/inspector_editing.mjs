@@ -146,7 +146,13 @@ assert.equal(priorWidget.getAttribute('lbl_position'), 'TL');
 // Complex node values and attributes cannot be edited or removed.
 page.live(() => builder.data.setItem('complex', new Bag({child: 'kept'}), {object: {nested:true}}));
 select('data', 'complex');
-assert.equal(field('data', 'value').disabled, true);
+assert.equal(field('data', 'value'), null, 'Bag values have no primary value row');
+const nestedBag = builder.data.getItem('complex');
+stage('data', 'caption', 'string', 'Container');
+attributeRow('data', 'caption').querySelector('[data-cell="value"]').dispatchEvent(new window.FocusEvent('focusout', {bubbles:true, composed:true}));
+assert.equal(builder.data.getNode('complex').attr.caption, 'Container');
+assert.equal(builder.data.getItem('complex'), nestedBag, 'attribute edits preserve the nested Bag');
+assert.equal(nestedBag.getItem('child'), 'kept');
 const complexRow = attributeRow('data', 'object');
 assert.equal(complexRow.querySelector('[data-cell="value"]').disabled, true);
 assert.equal(complexRow.querySelector('[data-cell="remove"]').disabled, true);

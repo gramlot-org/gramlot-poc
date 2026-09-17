@@ -42,3 +42,26 @@ test('HTML documents expose a stack with sandboxed preview and shared rich-text 
  assert.equal(ide.model.document().getItem('content'),'<p>Hello</p>');
  ide.remove();
 });
+
+test('Markdown documents share Raw and rich edits, preserve lock and revert state',()=>{
+ setupDom();defineGramlotIde();
+ const ide=document.createElement('gnr-gramlotide');
+ ide.sourceNode={absDatapath:()=> 'mdide',handler:{application:{data:new Bag(),server:{cancel(){}},feedback:{busy(){}}}}};
+ document.body.append(ide);
+ const key=ide.model.add('card.md','# Card\n','markdown');
+ const tab=ide.parts.tabs.children[0],views=tab.htmlViews;
+ assert.equal(views.isMarkdown,true);
+ assert.equal(views.stack.value,'Raw');
+ assert.equal(views.preview.getAttribute('sandbox'),'');
+ assert.equal(views.prose.tagName.toLowerCase(),'gnr-markdowneditor');
+ views.prose._value='# Ignored';views.prose.dispatchEvent(new Event('change'));
+ assert.equal(ide.model.document(key).getItem('content'),'# Card\n');
+ tab.controls.toggle.click();
+ views.prose._value='# Updated';views.prose.dispatchEvent(new Event('change'));
+ assert.equal(tab.controls.editor.value,'# Updated');
+ assert.equal(ide.model.dirty(key),true);
+ tab.controls.revert.click();
+ assert.equal(tab.controls.editor.value,'# Card\n');
+ assert.equal(ide.model.dirty(key),false);
+ ide.remove();
+});

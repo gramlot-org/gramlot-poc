@@ -1,5 +1,20 @@
 # Gramlot pages in the legacy Genropy WSGI host
 
+## Deployed asset lookup correction — 2026-09-14
+
+The site returned HTTP 500 when the editable Gramlot checkout no longer contained
+`resources/browser/manifest.json`. The adapter previously looked there even though
+the site already had a complete browser payload installed. It now reads the
+explicit build ID from `site/gramlot/current.json` and passes the corresponding
+installed directory to `RuntimeAssets(browser_directory=...)`. The selected build
+is `f56e90a19a7ee835`; its manifest must match the configured build ID.
+
+The regression test moves the browser distribution outside the package, leaves
+the package without its browser manifest, and verifies that the selected deployed
+entry still serves successfully. All eight browser-distribution tests and the real
+WSGI/menu checks pass. Future browser updates must install a complete versioned
+payload and update `current.json` explicitly.
+
 ## Owner direction
 
 Pages remain in the normal `webpages/` directory. Inheriting from `GramlotPage`
@@ -56,6 +71,14 @@ library invocation uses the standard Genropy server; the checkout's CLI wrapper
 currently imports an unavailable `NewServer` name, so it is not used here.
 
 ## Verification and limits
+
+The local page now also carries the minimum legacy iframe lifecycle mixin. The
+real menu path connects the child to its iframe SourceNode after content ready,
+delivers opening arguments through the Gramlot `changedStartArgs` topic, and
+shows a Python-authored receipt counter. Selecting the existing menu entry sends
+another payload; switching through a legacy page and returning reaches the same
+child without calling missing legacy APIs. Closing removes the iframe and a
+fresh open reconnects with a new counter.
 
 The actual site loads the new page without inheriting the legacy page or adding
 legacy mixins; the existing Hello World still follows legacy class composition.

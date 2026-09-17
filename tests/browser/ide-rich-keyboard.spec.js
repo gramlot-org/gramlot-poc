@@ -1,9 +1,11 @@
 import {test,expect} from '@playwright/test';
-import {readFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
 
 // Run with Chromium and WebKit: fill() alone does not test keyboard focus.
 test('rich text accepts real typing while document scripts remain blocked',async({page})=>{
- const source=readFileSync(new URL('../../js/dom/src/collections/html-editor.js',import.meta.url),'utf8');
+ const source=execFileSync(new URL('../../js/dom/node_modules/.bin/esbuild',import.meta.url).pathname,[
+  new URL('../../js/dom/src/collections/html-editor.js',import.meta.url).pathname,
+  '--bundle','--format=esm','--platform=browser','--target=es2022'],{encoding:'utf8'});
  await page.setContent('<body></body>');
  await page.addScriptTag({type:'module',content:source+'\ndefineHtmlEditor();'});
  await page.evaluate(async()=>{

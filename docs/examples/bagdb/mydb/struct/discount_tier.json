@@ -1,0 +1,80 @@
+{
+  "table": "discount_tier",
+  "sourceTable": "invc.discount_tier",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "customer_type_code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Customer Type",
+      "sourceReference": "customer_type.code",
+      "references": "customer_type.code"
+    },
+    "description": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Description"
+    },
+    "discount_rate": {
+      "dtype": "T",
+      "sourceDtype": "perc",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Discount Rate"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "max_amount": {
+      "dtype": "T",
+      "sourceDtype": "N",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Max Amount"
+    },
+    "min_amount": {
+      "dtype": "T",
+      "sourceDtype": "N",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Min Amount"
+    }
+  },
+  "omittedComputedFields": []
+}

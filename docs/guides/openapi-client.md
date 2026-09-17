@@ -36,7 +36,7 @@ on both helpers; the other session keys below are the current explicit contract.
 The application declares its own layout, navigation widget, response widgets and
 buttons in Python. Tiny local button actions increment a counter or toggle a
 boolean. The service responds to those Data changes, generates Source from the
-schema, and delegates requests to `genro.resolvers`. Source removal cancels an
+schema, and delegates requests to `gramlot.resolvers`. Source removal cancels an
 in-flight request through the existing resolver lifecycle.
 
 An operation change rebuilds only the generated form Source and resets its

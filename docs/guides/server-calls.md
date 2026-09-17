@@ -43,7 +43,7 @@ request and the application `ExclusiveBagStore`.
 
 ## Typed calls and lifecycle
 
-`dataRpc` and `genro.serverCall` share `ServerCallService`. Named parameters are
+`dataRpc` and `gramlot.serverCall` share `ServerCallService`. Named parameters are
 resolved once per invocation, encoded as TYTX JSON, checked against the allowlisted
 method signature and decoded automatically. Strings, integers, floats, booleans,
 Decimal values, null and Bags retain their types. No `_result_dtype` is needed.

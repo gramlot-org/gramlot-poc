@@ -47,7 +47,7 @@ def example_panel(root, source_text: str, title: str):
                              height='100%', class_='example-live-column')
     live = left.div(class_='example-live', height='calc(100% - 26px)')
     left.button('🔍 Open inspector', class_='example-inspector-toggle',
-                action='genro.inspector.toggle();', **{'aria-label':'Open inspector'})
+                action='gramlot.inspector.toggle();', **{'aria-label':'Open inspector'})
     code = split.contentPane(region='center', height='100%', class_='example-code')
     code.div('Python', class_='example-code-label')
     code.codeMirror(value=source_text, language='python', readonly=True,

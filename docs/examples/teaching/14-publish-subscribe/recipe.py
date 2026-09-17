@@ -9,7 +9,7 @@ class Page(WebPage):
         root.data('local_message', 'Publish from the button node')
         root.textBox(value='^name', lbl='Name')
         root.button('Publish greeting', name='=name',
-                    action="genro.publish('greeting', {name: name});")
+                    action="gramlot.publish('greeting', {name: name});")
         root.dataController("this.SET('message', 'Hello ' + name);",
                             subscribe_greeting=True)
         root.dataController("this.SET('count', count + 1);",

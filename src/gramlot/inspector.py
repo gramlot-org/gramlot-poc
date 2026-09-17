@@ -10,8 +10,8 @@ def build_inspector(root, *, presentation="floating"):
     root.button("Inspector · Ctrl+Shift+D", **{
         "data-inspector": "toggle", "aria-keyshortcuts": "Control+Shift+D"})
     container = root if presentation == "embedded" else root.palette(title="Inspector", value="^opened", collapsible=True,
-                           width="min(640px, calc(100vw - 32px))",
-                           height="min(640px, calc(100vh - 32px))", left="16px", top="16px")
+                           width="min(560px, calc(100vw - 32px))",
+                           height="min(720px, calc(100vh - 32px))", left="16px", top="16px")
     tabs = container.tabContainer(height="100%")
     for kind in ("data", "source"):
         build_view(tabs.tab(key=kind, label=kind.title(), height="100%"), kind)

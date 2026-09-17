@@ -1,0 +1,34 @@
+[
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150990",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.150994",
+    "code": "RES",
+    "description": "Residential"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.151630",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.151634",
+    "code": "COM",
+    "description": "Commercial"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.151756",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.151760",
+    "code": "GOV",
+    "description": "Government"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.151878",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.151883",
+    "code": "TRD",
+    "description": "Trade"
+  }
+]

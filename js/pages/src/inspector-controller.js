@@ -1,5 +1,6 @@
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 import {Shortcuts} from './shortcuts.js';
+import {normalizeInspectorOrigins} from './inspector-origins.js';
 
 // Keyboard ownership only: entries are removed on application disposal.
 const documentControllers = new WeakMap();
@@ -12,6 +13,7 @@ export class InspectorController {
         this.disposed = false;
         this.pending = null;
         this.presentation = application.options.inspector?.presentation || 'floating';
+        this.origins = normalizeInspectorOrigins(typeof application.options.inspector === 'object' && application.options.inspector !== null ? application.options.inspector : {});
         const host = application.target.root;
         this.button = host.ownerDocument.createElement('button');
         this.button.type = 'button';
@@ -48,12 +50,16 @@ export class InspectorController {
         this._presentation = value;
     }
     get opened() { return this.element?.opened ?? false; }
-    async _create() {
+    configuredOrigins(overrides = {}) {
+        return {...this.origins, ...normalizeInspectorOrigins(overrides)};
+    }
+    async _create(overrides = {}) {
         if (this.disposed) return null;
+        const origins = this.configuredOrigins(overrides);
         if (!this.pending) {
             this.pending = import('./inspector-component.js').then(async ({createInspector}) => {
                 if (this.disposed) return null;
-                const element = createInspector(this.application, this.presentation);
+                const element = createInspector(this.application, this.presentation, origins);
                 this.element = element;
                 const root = this.application.target.root;
                 const selector = this.application.options.inspector?.target;
@@ -65,16 +71,19 @@ export class InspectorController {
                 return this.disposed ? null : element;
             }).catch(error => { this.pending = null; throw error; });
         }
-        return this.pending;
+        const element = await this.pending;
+        element?.setOrigins(origins);
+        return element;
     }
-    async open() { const element = await this._create(); if (element) element.opened = true; return element; }
-    async toggle() {
+    async open(origins = {}) { const element = await this._create(origins); if (element) element.opened = true; return element; }
+    async toggle(origins = {}) {
         // Existing hosts may have explicitly mounted the legacy inspector API.
         if (!this.element && this.application.dev?.inspector) {
+            this.application.dev.inspector.setOrigins?.(this.configuredOrigins(origins));
             this.application.dev.inspector.shortcuts.execute('inspector.toggle');
             return null;
         }
-        const element = await this._create(); if (element) element.opened = !element.opened; return element; }
+        const element = await this._create(origins); if (element) element.opened = !element.opened; return element; }
     close() { if (this.element) this.element.opened = false; }
     dispose() {
         if (this.disposed) return;

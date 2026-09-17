@@ -42,3 +42,14 @@ def test_typed_inspector_controls():
          str(folder / 'inspector_typed.mjs')], capture_output=True, text=True,
         input=to_tytx(builder.source, transport="json"), timeout=30)
     assert result.returncode == 0, result.stderr
+
+
+def test_inspector_scoped_origins():
+    builder = GramlotBuilder("main")
+    build_inspector(builder.root)
+    folder = Path(__file__).parent
+    result = subprocess.run(
+        ['node', '--experimental-loader', str(folder / 'lab_loader.mjs'),
+         str(folder / 'inspector_roots.mjs')], capture_output=True, text=True,
+        input=to_tytx(builder.source, transport="json"), timeout=30)
+    assert result.returncode == 0, result.stderr

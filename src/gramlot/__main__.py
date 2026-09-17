@@ -32,17 +32,12 @@ class Cli:
 
     def serve_fastapi(self, parser, options):
         try:
-            import uvicorn
-            from gramlot.contrib.fastapi import GramlotApplication
+            from gramlot_fastapi.__main__ import Cli as FastApiCli
         except ModuleNotFoundError as error:
-            if error.name not in {"fastapi", "uvicorn", "starlette"}:
+            if error.name not in {"fastapi", "gramlot_fastapi", "uvicorn", "starlette"}:
                 raise
-            parser.error("FastAPI support is optional; install 'gramlot[fastapi]'.")
-        try:
-            app = GramlotApplication(directory=options.directory, prefix=options.prefix)
-        except (ValueError, OSError) as error:
-            parser.error(str(error))
-        uvicorn.run(app, host=options.host, port=options.port)
+            parser.error("FastAPI support is optional; install 'gramlot-fastapi'.")
+        FastApiCli.serve(parser, options)
 
 
     def serve_manual(self, parser, options):

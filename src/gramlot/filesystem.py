@@ -90,7 +90,7 @@ class FileSystemPageMixin:
         return dict(path=path, content=raw.decode('utf-8'), revision=hashlib.sha256(raw).hexdigest(),
                     writable=self.filesystem_can_write(root),
                     language={'.py':'python', '.js':'javascript', '.css':'css', '.html':'html',
-                              '.xml':'xml', '.md':'markdown', '.json':'json'}.get(file.suffix.lower(), 'text'))
+                              '.xml':'xml', '.md':'markdown', '.markdown':'markdown', '.json':'json'}.get(file.suffix.lower(), 'text'))
 
     @endpoint
     def document_save(self, root, path, content, revision):

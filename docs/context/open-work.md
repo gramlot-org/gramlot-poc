@@ -1,9 +1,124 @@
+## BagDB ownership and local DB trials — 2026-09-17
+
+Owner: run database experiments in gramlot-poc; move BagDB out of Bag JS into
+Gramlot common code. Local library, read adapter, dataRecord/dataSelection,
+dbSelect and grid integration are implemented with tests and a Python laboratory.
+See [GP-020](../development/020-bagdb-laboratory.md). This supersedes older statements
+that the fake and both declarations are wholly absent. Typed widget identities,
+field/fieldcell, recursive model trees and remote providers remain open. Product
+acceptance is separate; no release or architecture amendment is implied.
+
+## Database adapter capabilities — discussion, 2026-09-15
+
+The [dataRecord/dataSelection audit](../development/datarecord-dataselection-legacy-audit-2026-09-15.md)
+now inventories both legacy helpers and their server contracts. Decide portable
+record/collection response shapes, missing-record semantics, typed filters and
+one pagination layer before implementing DbHandler endpoints. Suggested tier
+membership is not an owner decision; this audit adds no runtime capabilities.
+
+The owner requests a shared database contract exercised through dbSelect and
+dataRecord with a fake adapter and SQLAlchemy/SQLite. A local SQLite copy of
+test_invoice_pg contains 18 tables and 17,511 verified rows; this proves basic
+data portability, not widget or application-model parity.
+
+The [complete dbSelect parameter audit](../development/dbselect-parameters-and-adapter-capabilities-2026-09-15.md)
+maps all 25 named legacy server parameters, dedicated browser options, inherited
+families and extension points to common UI, database/model and host capabilities.
+It records legacy caveats and proposes explicit per-capability support instead
+of silently ignoring unsupported filters. The owner agrees on three tiers:
+mandatory minimum, common optional capabilities and adapter-specific extensions.
+Later owner clarification reserves advanced features for Genropy for commercial
+and product differentiation: `auxColumns` is Genropy-only; standard search uses
+prefix then containment with both case modes; custom `method` is common optional.
+The remaining set membership is proposed in the audit. The API, capability names and first
+implementation scope remain under discussion; no adapter implementation follows
+from this audit alone.
+
+Subsequent owner request produced the [minimal SQLite dbSelect
+prototype](../examples/sqlite-dbselect/README.md): optional SQLAlchemy reader,
+common select service and Python page on the copied customer data. This local
+slice implements prefix search with empty-result containment fallback, both case
+modes, identity lookup and limit. The fake adapter, dataRecord, custom method and
+formal capability negotiation remain open. The API is experimental. A subsequent refactor adopts a registered
+`dbhandler` proxy: `DbHandler` contains the common endpoint and
+`SqliteDbHandler` specializes access. The generic shared dispatcher supports
+allowlisted proxy endpoints; GenropyDbHandler is still pending.
+
+## Django integration ownership — 2026-09-15
+
+The owner moved all active Django adapter code, its tests, maintained guides and
+Django/Bakery examples to the sibling `gramlot-django` repository. Consumers now
+import `gramlot_django`; core no longer supplies `gramlot.contrib.django` or the
+`django` extra. Generic Python pages, shared host services and browser runtime
+remain here. Earlier Django ownership statements below are historical.
+This is a local migration, not a publication.
+
 > Latest release checkpoint (2026-09-12): GitHub v0.1.3 is published from
 > 8c12313. Earlier statements below about unchanged main/tags and no database
 > implementation are historical checkpoints; see [release status](../release.md)
 > and [current context](README.md). Site/Rosetta production deployment completed under their separate v0.1.3 tags.
 
 # Open work retained from Pages
+
+## Presentation sites — owner direction, 2026-09-15
+
+The three integration repository boilerplates now exist under `gramlot-org`:
+`gramlot-fastapi`, `gramlot-django`, and `gramlot-genro-asgi`. They follow the
+owner-selected `genro-asgi` packaging/tooling model. All remain pre-alpha
+scaffolds; runtime dependency selection, host implementation and example
+migration are still open. See each repository's SPECIFICATION.md.
+
+
+Reorganize code, examples and tutorials so the owner can manage distinct sites
+for presentations covering these scenarios:
+
+1. FastAPI without database integration.
+2. FastAPI with Genropy database integration.
+3. Genro ASGI without database integration.
+4. Genro ASGI with Genropy database integration.
+5. Classic Genropy with Gramlot integration.
+6. Genropy hosted on Genro ASGI with Gramlot integration.
+7. Django with Gramlot integration (Bakery).
+
+Inventory the existing examples, tutorial content and host integrations before
+moving them. Define shared content versus host-specific setup, reproducible
+startup instructions and a clear presentation entry point per scenario.
+Keep Python-first Gramlot-only applications and the server-independent core.
+The site/repository layout and migration have not yet been implemented.
+The related transfer of the three Gramlot GitHub repositories to `gramlot-org`
+is complete; see the decision register.
+
+## Scoped autocomplete policy — proposal recorded, 2026-09-14
+
+Owner requests recording, not implementing yet, an optional `autocomplete`
+setting at page, Source branch and individual field level. Proposed resolution:
+explicit field setting wins over the nearest configured ancestor branch, then
+the page setting. Absence means inherit; `off` is an explicit value, not absence.
+The resolved value must reach the native input inside the component, including
+its Shadow DOM. Browser AutoFill and Gramlot's own option suggestions are separate.
+
+Before implementation, settle the default, supported values and whether policy
+changes should update already mounted fields. Verify nested branches, field
+overrides and native attribute propagation. Safari may ignore `off` for AutoFill;
+the feature must not promise to suppress its contact suggestions. No code change
+is authorized by this recording request.
+
+## Python recipe decorator — planned only, 2026-09-14
+
+Add `@recipe` to expose Python composition methods through `pane.name(...)`,
+automatically supplying the parent and sending already expanded Source to the
+browser. The owner deferred implementation; see the
+[bounded plan](../development/python-recipe-decorator-plan-2026-09-14.md).
+Folder discovery, JS recipes and IDE migration remain separate work.
+
+## Page object genro → gramlot — implemented locally, 2026-09-13
+
+Owner-selected next change: rename the page object throughout runtime, examples,
+documentation and site consumers. See the [implementation plan](../development/gramlot-page-object-rename-plan-2026-09-13.md).
+The framework checkpoint `e2127a1` is pushed. The rename and consumer candidate
+verification are complete locally; review and any later publication remain.
+The owner excludes legacy handling and coexistence tests: Gramlot uses `gramlot`
+and ignores `genro`; its external `genro-*` library dependencies retain their names.
 
 ## Recipe concept — minimal experiment, 2026-09-13
 

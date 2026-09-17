@@ -1,0 +1,134 @@
+{
+  "format": 1,
+  "tables": {
+    "customer": {
+      "rows": 3200,
+      "csv": "projects/test_invoice/data/export/customer.csv",
+      "csvSha256": "0114f4dc7629a737c711db05e96dccce843722b08bcea412142a970798c25f12",
+      "model": "projects/test_invoice/packages/invc/model/customer.py",
+      "modelSha256": "f3f76a6c57c6682502afabe328b5e18d9ff418efabdb56e36b7623c2ce5c45b4"
+    },
+    "customer_type": {
+      "rows": 4,
+      "csv": "projects/test_invoice/data/export/customer_type.csv",
+      "csvSha256": "1145e98131eab60d953ebf97412b015c3704ebf1fced972f0910912e47644b05",
+      "model": "projects/test_invoice/packages/invc/model/customer_type.py",
+      "modelSha256": "2999028f75bd7f3ce73afbf4fccc8372df69a4aee2ab46836d840a15767cc242"
+    },
+    "discount_tier": {
+      "rows": 16,
+      "csv": "projects/test_invoice/data/export/discount_tier.csv",
+      "csvSha256": "0ef0260f60145ca5e22537ee10672d0c68b5f3710bb600bb760c598ec64ce276",
+      "model": "projects/test_invoice/packages/invc/model/discount_tier.py",
+      "modelSha256": "4a1f004b5eda312a863d13cc9f019ce9bba82f60fdf747e156eeaf23048c4761"
+    },
+    "invoice": {
+      "rows": 256,
+      "csv": "projects/test_invoice/data/export/invoice.csv",
+      "csvSha256": "aeaf2ff3c329ae3bb94e969fb1101a94562e602675f876c01c2ed21da32b2d34",
+      "model": "projects/test_invoice/packages/invc/model/invoice.py",
+      "modelSha256": "71f1ef0b6ad9cc20ddc37383ae08744e94b83fcf4a594204ef11d4947b6fbd8b"
+    },
+    "invoice_note": {
+      "rows": 387,
+      "csv": "projects/test_invoice/data/export/invoice_note.csv",
+      "csvSha256": "129a4b094943179cebb3faa9d4b4f5f6787b001b19c467741d3f16c9c0162c10",
+      "model": "projects/test_invoice/packages/invc/model/invoice_note.py",
+      "modelSha256": "fdf3e7d61cb64e9876bbfa273d7f45e5eebff48a0b23374a0ebca3d7550d55c3"
+    },
+    "invoice_row": {
+      "rows": 803,
+      "csv": "projects/test_invoice/data/export/invoice_row.csv",
+      "csvSha256": "1228ccc0cb35d7dae76e916cd8e2ac7166a7527c516d34fb249efcf3c6b85c44",
+      "model": "projects/test_invoice/packages/invc/model/invoice_row.py",
+      "modelSha256": "efe2006560c1753630a1873a3e33f09c28107c773e9ea82467d6391c355f3dd4"
+    },
+    "payment_type": {
+      "rows": 6,
+      "csv": "projects/test_invoice/data/export/payment_type.csv",
+      "csvSha256": "a976b7bc4cf3707049c4dd7b323f7fbf4e25f7950b183606a198dd9b0378b0d1",
+      "model": "projects/test_invoice/packages/invc/model/payment_type.py",
+      "modelSha256": "c5672daa4d420802f7088ad9482368b95713915c23a95e61060367785682eaec"
+    },
+    "postcode": {
+      "rows": 800,
+      "csv": "projects/test_invoice/data/export/postcode.csv",
+      "csvSha256": "ffe1640ff474b20482b0bcf901da34afb77f45af6dd52a37f9206e596abc2474",
+      "model": "projects/test_invoice/packages/invc/model/postcode.py",
+      "modelSha256": "100df477a120d6e5cd7a18b3e303b9f0cedc38a4b105416181610c298bf985ef"
+    },
+    "price_year": {
+      "rows": 6780,
+      "csv": "projects/test_invoice/data/export/price_year.csv",
+      "csvSha256": "5512d36893bd7c818447b9926674921acb43592ecefa11d3238e904972b63ab0",
+      "model": "projects/test_invoice/packages/invc/model/price_year.py",
+      "modelSha256": "48961724f864f130c2c59b42cf50ba684bbb075c67ae990418a10417d0562983"
+    },
+    "price_year_note": {
+      "rows": 3381,
+      "csv": "projects/test_invoice/data/export/price_year_note.csv",
+      "csvSha256": "b0ac4446c8b77fcb937a8476e3a7d89950beef29227b5023659a996def0ef89c",
+      "model": "projects/test_invoice/packages/invc/model/price_year_note.py",
+      "modelSha256": "e22bea4fdfce53faf64d1974ad8a3fc826ca613e8c156d1c6804277d3dc7e49f"
+    },
+    "product": {
+      "rows": 1695,
+      "csv": "projects/test_invoice/data/export/product.csv",
+      "csvSha256": "e465514660b1f73f07a113e61a624e9b2f8f5d9a87548cc87e67ddc111f703f3",
+      "model": "projects/test_invoice/packages/invc/model/product.py",
+      "modelSha256": "2225c75ce1cf8fca62c46d8db7b6a3ce0b7ae72c38a71b24919e04382bf767b8"
+    },
+    "product_type": {
+      "rows": 125,
+      "csv": "projects/test_invoice/data/export/product_type.csv",
+      "csvSha256": "a48713f7027cc168374d604e1b9c2b34dac66f4302b284ce2771ae73795c75ab",
+      "model": "projects/test_invoice/packages/invc/model/product_type.py",
+      "modelSha256": "f8a6bc9a38bd27e366a60e3c14367092eb47e15cf119aa280fd64a410916ba0f"
+    },
+    "region": {
+      "rows": 5,
+      "csv": "projects/test_invoice/data/export/region.csv",
+      "csvSha256": "cf36f525c3e5c7003136acc6f5de71cdfff5e774ed2e16554b7274901b1dd992",
+      "model": "projects/test_invoice/packages/invc/model/region.py",
+      "modelSha256": "3ad7ed5b7a0e9b00b9bfec034de6b6ac0f79f2c0d4f99ecd00bd6e87e324339d"
+    },
+    "staff": {
+      "rows": 32,
+      "csv": "projects/test_invoice/data/export/staff.csv",
+      "csvSha256": "86b40d6b2f7bea278b75e581f84a7fc8edd38534d60c746375b252a5f9e7e943",
+      "model": "projects/test_invoice/packages/invc/model/staff.py",
+      "modelSha256": "4d315c52b346ce233df251ec2f7db514f01dd4e303698cbbd3b31a273e7f08b9"
+    },
+    "staff_role": {
+      "rows": 5,
+      "csv": "projects/test_invoice/data/export/staff_role.csv",
+      "csvSha256": "1d6de21f9017e3d692cef58bd89f439c3cb71a1a0be180047891daf0d28c7234",
+      "model": "projects/test_invoice/packages/invc/model/staff_role.py",
+      "modelSha256": "a5b8935b7f165eeddf85d12dd8ecce432e26308b2926fdcbe9560dcabfe2286e"
+    },
+    "state": {
+      "rows": 8,
+      "csv": "projects/test_invoice/data/export/state.csv",
+      "csvSha256": "e4111bce7f8f88706a5c8d8e2ca4eea5ea7c410e965beedddb4941f9b202573e",
+      "model": "projects/test_invoice/packages/invc/model/state.py",
+      "modelSha256": "4a85671eba7775a08dbdcba977aed888ea602584ea2184db1e17c5c1e87aa97a"
+    },
+    "user": {
+      "rows": 32,
+      "csv": "projects/test_invoice/data/export/user.csv",
+      "csvSha256": "59f956d4a349c84a1629bd6b27339f95af425d61ea98943b0d5135470b32a2b1",
+      "model": "projects/gnrcore/packages/adm/model/user.py",
+      "modelSha256": "a5aba23ecf28a376b6e4dd4bd293857f6d588aa91a80f157efe43f0cd2344b11"
+    },
+    "vat_type": {
+      "rows": 3,
+      "csv": "projects/test_invoice/data/export/vat_type.csv",
+      "csvSha256": "752113c2388bb9ef2618818100da8b7e569bfc2aa93348223d8be1f8e1ad2dec",
+      "model": "projects/test_invoice/packages/invc/model/vat_type.py",
+      "modelSha256": "c67510e283501730f02c50a65a80c68fd6a8c4b97c472b04f260f820c8c73a80"
+    }
+  },
+  "totalRows": 17538,
+  "valuePolicy": "CSV strings preserved verbatim; loader maps empty strings to null like legacy tests; integer/boolean fields converted explicitly. Decimal/date/XML remain text.",
+  "scope": "All exported physical columns and rows. Computed fields, triggers, composite joins and external relations are not implemented."
+}

@@ -44,3 +44,25 @@ test('palette closes through its binding, retains content and supports keyboard 
     palette.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
     assert.equal(app.builder.data.getItem('open'), false);
 });
+
+
+test('opening restores the palette layer after Source geometry is applied', async () => {
+    setupDom();
+    window.requestAnimationFrame = callback => setTimeout(callback, 0);
+    class Page extends HtmlBuilder {
+        static wc_requires = ['palette'];
+        setup() { this.setData('open', false); }
+        main(root) { root.palette({value:'^open', width:'560px', height:'720px'}); }
+    }
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const app = new Application(host, new Page('test'));
+    app.live(() => app.builder.data.setItem('open', true));
+    const palette = host.querySelector('gnr-palette');
+    // Match the renderer's value-then-style attribute order.
+    palette.setAttribute('style', 'width:560px;height:720px');
+    await Promise.resolve();
+    assert.ok(Number(palette.style.zIndex) > 1000);
+    assert.equal(palette.style.width, '560px');
+    app.dispose();
+});

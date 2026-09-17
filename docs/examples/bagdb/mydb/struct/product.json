@@ -1,0 +1,164 @@
+{
+  "table": "product",
+  "sourceTable": "invc.product",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Code"
+    },
+    "description": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Description"
+    },
+    "details": {
+      "dtype": "T",
+      "sourceDtype": "X",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Details"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "image_url": {
+      "dtype": "T",
+      "sourceDtype": "P",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Image url"
+    },
+    "presentation_txt": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Presentation"
+    },
+    "product_type_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Product type",
+      "sourceReference": "product_type.id",
+      "references": "product_type.id"
+    },
+    "unit_price": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Price"
+    },
+    "vat_type_code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "VAT type",
+      "sourceReference": "vat_type.code",
+      "references": "vat_type.code"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "picture",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "total_sold",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "price_range",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "code_and_desc",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "price_floor",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "price_label",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "product_type_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "concat_code_desc",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "code_normalized",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "code_clean",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "computed_margin",
+      "kind": "pyColumn"
+    },
+    {
+      "name": "price_rounded",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "description_clean",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "code_prefix_std",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "price_as_int_text",
+      "kind": "formulaColumn"
+    }
+  ]
+}

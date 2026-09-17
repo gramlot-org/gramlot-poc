@@ -2,6 +2,7 @@
 import {HtmlBuilder} from 'gramlot-dom';
 import {InspectorController} from './inspector-controller.js';
 import '/_assets/dom/collections/inputs.js';
+import '/_assets/dom/collections/frame-channel.js';
 import '/_assets/dom/collections/layout.js';
 import '/_assets/dom/collections/forms.js';
 import '/_assets/dom/collections/colorpicker.js';
@@ -21,5 +22,5 @@ export class GramlotBuilder extends HtmlBuilder {
     }
     get root() { return this.source; }
     static data_recipe_alias = true;
-    static wc_requires = ['inputs', 'layout', 'forms', 'colorpicker', 'storeTree', 'grid', 'chart', 'palette', 'clipboard', 'labEditors'];
+    static wc_requires = ['inputs', 'layout', 'forms', 'colorpicker', 'storeTree', 'grid', 'chart', 'palette', 'clipboard', 'labEditors', 'frameChannel'];
 }

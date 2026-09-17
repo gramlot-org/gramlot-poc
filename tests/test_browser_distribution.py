@@ -7,17 +7,9 @@ import subprocess
 import tomllib
 from zipfile import ZipFile
 
-import pytest
-
-
 ROOT = Path(__file__).resolve().parents[1]
 BROWSER = ROOT / "src/gramlot/resources/browser"
 BROWSER_MANIFEST = BROWSER / "manifest.json"
-
-pytestmark = pytest.mark.skipif(
-    not BROWSER_MANIFEST.is_file(),
-    reason="browser distribution is built only by the package job",
-)
 
 
 def test_browser_manifest_is_complete_and_content_addressed():

@@ -33,12 +33,12 @@ test('actions resolve current parameters, guard disabled, and publish to live re
     assert.equal(app.data.getItem('main.result'), true);
 });
 
-test('genro event service isolates page instances and preserves source-node action scope', () => {
+test('gramlot event service isolates page instances and preserves source-node action scope', () => {
     setupDom();
     class Page extends HtmlBuilder {
         main(root) {
             root.div({datapath:'local'}).button('Run', {
-                action:"this.SET('.result', sourceNode === this); genro.publish('done', this);"
+                action:"this.SET('.result', sourceNode === this); gramlot.publish('done', this);"
             });
         }
     }
@@ -55,4 +55,27 @@ test('genro event service isolates page instances and preserves source-node acti
     assert.equal(second.data.getItem('main.local.result'), null);
     assert.equal(received.nodeTag, 'button');
     assert.equal(other, false);
+});
+
+test('action context exposes only the owning gramlot application and keeps it authoritative', () => {
+    setupDom();
+    let received;
+    class Page extends HtmlBuilder {
+        main(root) {
+            root.button('Function', {
+                gramlot: 'authored value',
+                action: (_value, args) => { received = args; },
+            });
+            root.button('String', {
+                action: "this.SET('sameApplication', gramlot === this.handler.application);",
+            });
+        }
+    }
+    const host = document.createElement('div'); document.body.append(host);
+    const app = new Application(host, new Page('main'));
+    const [functionButton, stringButton] = host.querySelectorAll('button');
+    functionButton.click(); stringButton.click();
+    assert.equal(received.gramlot, app);
+    assert.equal(app.data.getItem('main.sameApplication'), true);
+    app.dispose();
 });

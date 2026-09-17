@@ -73,7 +73,7 @@ export class HtmlRenderer extends RendererBase {
             }
         }
         if (['gnr-dbselect', 'gnr-remoteselect', 'gnr-callbackselect'].includes(tag)) {
-            if (tag !== 'gnr-callbackselect') node.handler.application.server.requireCapability();
+            if (tag !== 'gnr-callbackselect' && !runtimeAttrs.dbadapter) node.handler.application.server.requireCapability();
             el.sourceNode = node;
         }
         if (tag === 'gnr-chart') {
@@ -85,7 +85,7 @@ export class HtmlRenderer extends RendererBase {
         if (tag === 'gnr-grid') {
             el.sourceNode = node;
             const {store, columns = [], structpath, identifier = null, selectedKey = null,
-                rowHeight = 26, frozenColumns = 0, datamode = 'bag', ...attrs} = runtimeAttrs;
+                selectionMode = 'single', selectedKeys, selfDragRows = false, selfDragColumns = false, rowHeight = 26, frozenColumns = 0, footer = false, statusBar = false, statusTarget = null, autoRowHeight = false, rowHeaders = false, rowResize = false, datamode = 'bag', ...attrs} = runtimeAttrs;
             if (typeof store === 'string') {
                 if (node.getAttr('identifier') != null || node.getAttr('datamode') != null) {
                     throw new Error('Named grid stores own identifier and datamode');
@@ -96,13 +96,34 @@ export class HtmlRenderer extends RendererBase {
             if (node.getAttr('structpath')) el.structBag = structpath;
             else el.columns = columns;
             el.frozenColumns = frozenColumns;
+            el.footer = footer;
+            el.statusTarget = statusTarget;
+            el.statusBar = statusBar;
+            el.autoRowHeight = autoRowHeight;
+            el.rowHeaders = rowHeaders;
+            el.rowResize = rowResize;
+            el.selectionMode = selectionMode;
+            el.selfDragRows = selfDragRows; el.selfDragColumns = selfDragColumns;
             el.rowHeight = rowHeight;
             el.selectedKey = selectedKey;
+            if(selectedKeys!==undefined)el.selectedKeys=selectedKeys;
             el.addEventListener('grid-selected-row', event => {
                 if (node.builder?.handler?.application) node.publish('onSelectedRow', event.detail);
             });
             el.addEventListener('grid-activated-row', event => {
                 if (node.builder?.handler?.application) node.publish('onRowActivated', event.detail);
+            });
+            el.addEventListener('grid-columns-reordered', event => {
+                const handler=node.builder.handler;
+                if(!handler || node.getAttr('structpath'))return;
+                handler.live(()=>{
+                    const declaration=node.getAttr('columns');
+                    const pointer=node.pointerType(declaration);
+                    const current=pointer?handler.data.getItem(node.absDatapath(declaration)):declaration;
+                    const updated=event.detail.order.map(id=>current.find(column=>String(column.id||column.field)===id));
+                    if(pointer)handler.data.setItem(node.absDatapath(declaration),updated);
+                    else node.setAttr({columns:updated});
+                });
             });
             el.addEventListener('grid-column-resize', event => {
                 const handler = node.builder.handler;

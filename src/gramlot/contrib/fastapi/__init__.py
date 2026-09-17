@@ -1,5 +1,5 @@
-"""Optional FastAPI integration."""
+"""Compatibility imports for the external :mod:`gramlot_fastapi` adapter."""
 
-from .application import GramlotApplication, mount_gramlot
+from gramlot_fastapi import GramlotApplication, PageCollection, mount_gramlot
 
-__all__ = ['GramlotApplication', 'mount_gramlot']
+__all__ = ["GramlotApplication", "PageCollection", "mount_gramlot"]

@@ -1,9 +1,11 @@
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
+import {defineMarkdownEditor, renderMarkdown} from './markdown-editor.js';
 import {defineHtmlEditor} from './html-editor.js';
 import {IdeDocuments} from '../services/ide-documents.js';
 
 export function defineGramlotIde(){
     defineHtmlEditor();
+    defineMarkdownEditor();
     if(customElements.get('gnr-gramlotide'))return;
     customElements.define('gnr-gramlotide',class GramlotIde extends HTMLElement{
         constructor(){super();this.attachShadow({mode:'open'});}
@@ -94,15 +96,17 @@ export function defineGramlotIde(){
                     editor.setAttribute('aria-label',doc.getItem('path'));
                     editor.setAttribute('readonly','');editor.value=doc.getItem('content');
                     editor.addEventListener('change',()=>{if(!tab.syncing&&doc.getItem('editing'))doc.setItem('content',editor.value);});
-                    if(doc.getItem('language')==='html'){
+                    if(['html','markdown'].includes(doc.getItem('language'))){
+                        const isMarkdown=doc.getItem('language')==='markdown';
                         const stack=document.createElement('gnr-stackcontainer');stack.style.height='100%';
-                        const preview=document.createElement('iframe');preview.title='HTML preview';preview.setAttribute('sandbox','');preview.style.cssText='width:100%;height:100%;border:0;background:white';
-                        const prose=document.createElement('gnr-proseeditor');prose.readonly=true;
+                        const preview=document.createElement('iframe');preview.title=isMarkdown?'Markdown preview':'HTML preview';preview.setAttribute('sandbox','');preview.style.cssText='width:100%;height:100%;border:0;background:white';
+                        const prose=document.createElement(isMarkdown?'gnr-markdowneditor':'gnr-proseeditor');prose.readonly=true;
                         prose.addEventListener('change',()=>{if(!tab.syncing&&doc.getItem('editing'))doc.setItem('content',prose.value);});
-                        for(const [name,content] of [['Code',editor],['Preview',preview],['Rich text',prose]]){
+                        for(const [name,content] of [[isMarkdown?'Raw':'Code',editor],['Preview',preview],['Rich text',prose]]){
                             const pane=document.createElement('gnr-contentpane');pane.setAttribute('pageName',name);pane.style.height='100%';pane.append(content);stack.append(pane);
-                            const button=document.createElement('button');button.textContent=name;button.onclick=()=>{stack.value=name;if(name==='Preview'&&!model.previewmethod)preview.srcdoc=doc.getItem('content');
-                            if(name==='Preview'&&model.previewmethod){
+                            const button=document.createElement('button');button.textContent=name;button.onclick=()=>{stack.value=name;if(name==='Preview'&&isMarkdown)this.markdownPreview(tab,preview,doc.getItem('content'));
+                            if(name==='Preview'&&!isMarkdown&&!model.previewmethod)preview.srcdoc=doc.getItem('content');
+                            if(name==='Preview'&&!isMarkdown&&model.previewmethod){
                                 const generation=(tab.previewGeneration||0)+1;tab.previewGeneration=generation;
                                 preview.srcdoc='<p>Loading preview…</p>';
                                 this.run(async()=>{const result=await model.preview(key);
@@ -110,7 +114,7 @@ export function defineGramlotIde(){
                                 },'Preview rendered');
                             }if(name==='Rich text')prose.value=doc.getItem('content');};toolbar.append(button);
                         }
-                        stack.value='Code';tab.htmlViews={stack,preview,prose};layout.append(toolbar,stack);
+                        stack.value=isMarkdown?'Raw':'Code';tab.htmlViews={stack,preview,prose,isMarkdown};layout.append(toolbar,stack);
                     }else layout.append(toolbar,editor);
                     tab.append(layout);
                     tab.controls={toggle,save,revert,editor};
@@ -132,14 +136,24 @@ export function defineGramlotIde(){
                 tab.syncing=true;
                 try{
                     if(tab.htmlViews){
-                        const {stack,preview,prose}=tab.htmlViews;prose.readonly=!editing;
-                        if(!model.previewmethod&&stack.value==='Preview'&&preview.srcdoc!==doc.getItem('content'))preview.srcdoc=doc.getItem('content');
+                        const {stack,preview,prose,isMarkdown}=tab.htmlViews;prose.readonly=!editing;
+                        if(isMarkdown&&stack.value==='Preview')this.markdownPreview(tab,preview,doc.getItem('content'));
+                        if(!isMarkdown&&!model.previewmethod&&stack.value==='Preview'&&preview.srcdoc!==doc.getItem('content'))preview.srcdoc=doc.getItem('content');
                         if(stack.value==='Rich text'&&prose.value!==doc.getItem('content'))prose.value=doc.getItem('content');
                     }
                     if(editor.value!==doc.getItem('content'))editor.value=doc.getItem('content');
                     if(editor.hasAttribute('readonly')===editing)editor.toggleAttribute('readonly',!editing);
                 }finally{tab.syncing=false;}
             }
+        }
+
+        async markdownPreview(tab,preview,content){
+            if(tab.markdownSource===content)return;
+            tab.markdownSource=content;
+            const generation=tab.previewGeneration=(tab.previewGeneration||0)+1;
+            try{const html=await renderMarkdown(content);
+                if(tab.isConnected&&tab.previewGeneration===generation)preview.srcdoc=html;
+            }catch(error){if(tab.isConnected&&tab.previewGeneration===generation){preview.srcdoc='<p>Markdown preview unavailable.</p>';this.parts.status.textContent=error.message;tab.markdownSource=undefined;}}
         }
 
         disconnectedCallback(){

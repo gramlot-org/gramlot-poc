@@ -1,0 +1,136 @@
+{
+  "table": "product_type",
+  "sourceTable": "invc.product_type",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "_h_count": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "_h_count"
+    },
+    "_parent_h_count": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "_parent_h_count"
+    },
+    "_parent_h_description": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "_parent_h_description"
+    },
+    "_parent_h_pkey": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "_parent_h_pkey"
+    },
+    "_row_count": {
+      "dtype": "L",
+      "sourceDtype": "L",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "_row_count"
+    },
+    "description": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Description"
+    },
+    "df_colswidth": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "df_colswidth"
+    },
+    "df_custom_templates": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "df_custom_templates"
+    },
+    "df_fbcolumns": {
+      "dtype": "L",
+      "sourceDtype": "L",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "df_fbcolumns"
+    },
+    "df_fields": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "df_fields"
+    },
+    "hierarchical_description": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "hierarchical_description"
+    },
+    "hierarchical_pkey": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "hierarchical_pkey"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "parent_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "parent_id",
+      "sourceReference": "product_type.id",
+      "references": "product_type.id"
+    }
+  },
+  "omittedComputedFields": []
+}

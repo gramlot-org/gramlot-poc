@@ -1,0 +1,74 @@
+[
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.146048",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.887773",
+    "code": "NSW",
+    "name": "New South Wales",
+    "region_code": "NSW"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150018",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.892290",
+    "code": "VIC",
+    "name": "Victoria",
+    "region_code": "VIC"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150211",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.893462",
+    "code": "QLD",
+    "name": "Queensland",
+    "region_code": "QLD"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150356",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.894552",
+    "code": "WA",
+    "name": "Western Australia",
+    "region_code": "WA"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150491",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.895604",
+    "code": "SA",
+    "name": "South Australia",
+    "region_code": "SA"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150618",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.897122",
+    "code": "TAS",
+    "name": "Tasmania",
+    "region_code": "VIC"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150740",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.898161",
+    "code": "ACT",
+    "name": "Australian Capital Territory",
+    "region_code": "NSW"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.150862",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-20 09:28:32.899206",
+    "code": "NT",
+    "name": "Northern Territory",
+    "region_code": "QLD"
+  }
+]

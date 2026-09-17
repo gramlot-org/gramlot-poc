@@ -231,6 +231,32 @@ unopened branches.
 
 ## Consolidated UI choices
 
+Owner update, 2026-09-14: field groups marked with a diamond hide the leading
+disclosure chevron. Their diamond and caption align with field badges and
+labels; children stay at the same level. An outlined eye immediately after
+the caption shows whether the group is visible (open eye) or hidden (struck
+eye), superseding the initial plus/minus trial.
+Native summary keyboard and toggle behavior is preserved. Relation, table-root
+and Favorites disclosure indicators retain their existing appearance.
+
+Subsequent owner refinement: remove the group diamond entirely, without a badge
+or replacement button, and omit the attributes info control for groups. Captions
+remain aligned with field labels using padding and use semibold, lightly spaced
+small caps in a light gray at full opacity. The trailing eye toggle remains.
+
+Open field groups now place their children on one continuous cream sheet
+(`--tree-group-sheet-bg`, default `#fff9e9`), with subtly rounded lower corners
+and a light shadow. Field alignment is preserved; the heading stays separate.
+
+Latest owner refinement: replace the trailing eye with an outlined open/closed
+folder before the group caption. The icon has no background tile. Small caps,
+field-label alignment, omitted info buttons and the cream content sheet remain.
+
+Final typography refinement: the owner rejected a centered section-bar proposal.
+Keep the existing layout and folder, remove small caps and letter spacing, and
+use normal-case medium-weight plum captions (`--tree-group-color`, `#80516f`).
+This supersedes the earlier gray small-caps treatment.
+
 Current rendering supersedes the icon experiments above: literal dtype badges;
 green ascending and blue descending relations, both prefixed @; italic virtual
 columns with orange formulas; gray unfilled turtle, chain and Python marks.

@@ -1,3 +1,4 @@
+import {validationMessageStyle} from '../components/validation-style.js';
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 import {createDecimal, getDecimalLibrary, isDecimal} from 'genro-tytx';
 import {formatNumber, numberSymbols, parseNumberText} from '../number-format.js';
@@ -8,6 +9,7 @@ export class NumberEditor {
         this.host=host;this.input=input;this.committed=null;this.editing=false;this.focused=false;
         input.inputMode='decimal';
         this.message=host.ownerDocument.createElement('small');this.message.hidden=true;
+        this.message.style.cssText = validationMessageStyle;
         this.message.id='number-message';this.message.setAttribute('aria-live','polite');
         input.addEventListener('focus',()=>{this.focused=true;if(!this.editing){this.policy=this.context();this.display();}});
         input.addEventListener('input',()=>{this.editing=true;this.error();});

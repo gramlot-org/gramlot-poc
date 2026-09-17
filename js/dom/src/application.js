@@ -1,6 +1,6 @@
 // Copyright 2025 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 /**
- * Application — the `genro` object: the world↔handler layer.
+ * Application — the `gramlot` object: the world↔handler layer.
  *
  * Counterpart of Python's `ExampleApp`/`WsApplication`, standalone in
  * the browser. Owns the handler, the mounted builder, the DOM target,
@@ -30,6 +30,7 @@ import { RecipeRuntime } from './services/recipe-runtime.js';
 import {ResolverService} from './resolvers/service.js';
 import {OpenApiClientService} from './services/openapi-client.js';
 import {ServerCallService} from './services/server-call.js';
+import {DatabaseService} from './database/service.js';
 import {CollectionStores} from './stores/collection-stores.js';
 import {InteractionFeedback} from './services/interaction-feedback.js';
 
@@ -48,6 +49,7 @@ export class Application {
         this.server = new ServerCallService(this, options.rpc);
         this.feedback = new InteractionFeedback(this);
         this.stores = new CollectionStores(this);
+        this.database = new DatabaseService(this);
         this.openapi = new OpenApiClientService();
         this.handler = new BuilderHandler(this);
         this.vld = new Validator(this);
@@ -91,6 +93,7 @@ export class Application {
         this.resolvers.dispose();
         this.server.dispose();
         this.stores.dispose();
+        this.database.dispose();
         this.feedback.dispose();
         this._forms.dispose();
         this.handler.dispose();

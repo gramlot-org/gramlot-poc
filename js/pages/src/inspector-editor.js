@@ -1,5 +1,8 @@
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
+import {Bag} from 'genro-bag-js';
 import {toTytx, fromTytx, isDecimal, createDecimal} from 'genro-tytx';
+// Reference delete glyph: relationTree favorite removal.
+const REMOVE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M5 6l1 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l1-14M10 10v7M14 10v7"/></svg>';
 /** Typed property grid. Leaving a row commits validated edits through Bag APIs. */
 export class InspectorEditor {
     constructor(host, bag, page) {
@@ -142,6 +145,12 @@ export class InspectorEditor {
             control.disabled = !enabled || row?.dataset.complex === 'true';
         }
     }
+    setBag(bag) {
+        this.bag = bag;
+        this.path = null;
+        this.node = undefined;
+        this.reload();
+    }
     refresh(path) {
         if (this.applying) return;
         if (path !== this.path || this.node === undefined) { this.path = path; this.reload(); }
@@ -161,7 +170,7 @@ export class InspectorEditor {
         if (this.node) {
             this.value = this.node.getValue();
             this.attrs = {...this.node.attr};
-            this.appendRow('value', this.value, true);
+            if (!(this.value instanceof Bag)) this.appendRow('value', this.value, true);
             for (const [name, value] of Object.entries(this.attrs)) {
                 if (name !== '_meta') this.appendRow(name, value);
             }
@@ -199,6 +208,7 @@ export class InspectorEditor {
         if (fresh) { select.value = type; select.setAttribute('aria-label', 'New attribute type'); }
         else select.remove();
         const remove = row.querySelector('[data-cell="remove"]');
+        remove.innerHTML = REMOVE_ICON;
         remove.hidden = primary;
         remove.setAttribute('aria-label', `Remove ${name || 'new attribute'}`);
         input.disabled = remove.disabled = complex;
@@ -217,7 +227,8 @@ export class InspectorEditor {
         row.dataset.removed = String(row.dataset.removed !== 'true');
         const remove = row.querySelector('[data-cell="remove"]');
         const removed = row.dataset.removed === 'true';
-        remove.textContent = removed ? '↶' : '🗑';
+        if (removed) remove.textContent = '↶';
+        else remove.innerHTML = REMOVE_ICON;
         remove.title = removed ? 'Undo removal' : 'Remove attribute';
         remove.setAttribute('aria-label', `${removed ? 'Restore' : 'Remove'} ${row.dataset.name || 'new attribute'}`);
         this.dirty = true;
@@ -225,7 +236,8 @@ export class InspectorEditor {
     }
     apply(preserveRows = false) {
         if (!this.getUnchanged()) throw new Error('Node changed or was removed. Select another node and return to reload its current value.');
-        const value = this.parsedRow(this.rows.querySelector('[data-property="value"]'));
+        const valueRow = this.rows.querySelector('[data-property="value"]');
+        const value = valueRow ? this.parsedRow(valueRow) : this.value;
         // Hidden schema metadata must survive replacement of editable attributes.
         const attrs = Object.hasOwn(this.attrs, '_meta') ? {_meta: this.attrs._meta} : {};
         for (const row of this.rows.querySelectorAll('[data-property="attribute"]')) {

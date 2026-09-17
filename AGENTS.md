@@ -1,5 +1,19 @@
 # Gramlot project context
 
+## Living PoC and product authority — 2026-09-16
+
+This repository is now `gramlot-poc`, at
+`/Users/gporcari/Sviluppo/gramlot/gramlot-poc`. Keep its pages, tests and new
+experiments alive. Prepare bounded ports for the separate clean sibling `gramlot`.
+Read `../gramlot/docs/00-constitution.md` as the authoritative product constitution
+and `versione2/docs/00-consolidating-gramlot.md` for the evolution process.
+The previous in-repository `versione2/` destination is superseded; it now stores
+working documents. Report constitutional conflicts to the owner. Destination
+review feedback is recorded by port ID and improves subsequent PoC work.
+Earlier statements below naming this checkout `/gramlot/gramlot` are historical;
+that path now belongs to the clean product. Do not develop PoC features there.
+
+
 Before working, read `docs/context/README.md`, then its decision register and
 open-work list. These preserve the Pages/DOM/Rosetta conversations and later
 owner corrections. The user's current instructions always take precedence.
@@ -53,8 +67,11 @@ runtime tests may use JavaScript; application authors should not need to.
 
 ## Canonical workspace policy
 
-Read `docs/context/workspace-map.md` before checkout/dependency cleanup. The active
-framework lives in this repository under Sviluppo. Do not create new development
+Read `docs/context/workspace-map.md` before checkout/dependency cleanup. The canonical living laboratory is
+`/Users/gporcari/Sviluppo/gramlot/gramlot-poc`. The clean product is the separate
+`/Users/gporcari/Sviluppo/gramlot/gramlot` repository. Historical compatibility
+symlinks must be retained and continue to target the PoC. Experimental framework
+work lives in this PoC repository under Sviluppo. Do not create new development
 checkouts or deliverables under Documents/ChatGPT. Historical Pages/DOM directories
 are recovery material, not alternative development targets.
 
@@ -69,3 +86,13 @@ authorized in gramlot.contrib.fastapi, with gramlot[fastapi] dependencies and
 or application.json. Core imports and installations must remain server-independent. The extraction under
 docs/history/asgi-extraction-20260909 is preserved evidence, not active package
 code; do not restore it into src or browser assets as a convenience.
+
+
+## Shared documentation theme — owner directive, 2026-09-16
+
+All Gramlot documentation sites use the classic Read the Docs theme shown by
+Genro Bag: blue header, dark sidebar, light content and default theme typography.
+Use sphinx_rtd_theme for Sphinx (readthedocs for MkDocs). Preserve the Gramlot
+logo and accurate status notices. This supersedes prior Furo/Material choices;
+see ../gramlot/docs/005-documentation-policy.md and constitution section 9.
+This rule also applies to future documentation sites; application UI is separate.

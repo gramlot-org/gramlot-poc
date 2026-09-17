@@ -1,6 +1,22 @@
 # Gramlot release status
 
-## Current source version: 0.1.4 — unpublished
+## Current source version: 0.1.5 — unpublished
+
+Assigned on 2026-09-13 after the page-object rename. Python and internal
+JavaScript package versions are aligned, including the npm lockfile.
+
+Breaking authoring change: application code uses `gramlot` instead of `genro`;
+function callbacks receive `args.gramlot`. There is no compatibility alias.
+Regenerate previously serialized Source and migrate authored controller/action
+strings. External `genro-*` library names remain unchanged. See the
+[migration outcome](development/gramlot-page-object-rename-plan-2026-09-13.md).
+
+This assigns a source version only. The latest published framework release
+remains v0.1.3; no tag, package publication or deployment accompanies this bump.
+Gramlot remains pre-alpha; 0.2.0 beta is the development target. Framework and
+site version numbers are independent, even when both use 0.1.5.
+
+## Previous source version: 0.1.4 — unpublished
 
 The owner assigned 0.1.4 on 2026-09-13 after the relation-tree consolidation
 (commit `8be2f7a`). Python and internal JavaScript package versions are aligned.

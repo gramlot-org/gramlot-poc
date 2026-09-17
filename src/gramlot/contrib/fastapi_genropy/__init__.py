@@ -1,6 +1,6 @@
-"""Optional FastAPI–GenroPy integration; importing it does not import GenroPy."""
+"""Compatibility imports for :mod:`gramlot_fastapi.genropy`."""
 
-from .application import (
+from gramlot_fastapi.genropy import (
     GenropyPage,
     GenropyPageCollection,
     create_genropy_application,

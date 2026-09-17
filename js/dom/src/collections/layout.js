@@ -92,9 +92,9 @@ const BORDER_CSS =
 const TABS_CSS =
     ':host { display: flex; flex-direction: column; min-height: 0; }'
     + '.tabbar { display: flex; gap: 3px; padding:3px 3px 0; overflow-x:auto; border-bottom: 1px solid var(--tab-border,#dce1e7); background:var(--tabbar-background,#f5f6f8); }'
-    + '.tab-shell{display:inline-flex;align-items:center;flex:none;border-radius:5px 5px 0 0;position:relative;max-width:280px}.tab-shell:has(.active){background:var(--tab-active-background,#fff);box-shadow:inset 0 1px #e3e7ec,inset 1px 0 #e3e7ec,inset -1px 0 #e3e7ec}'
+    + '.tab-shell{display:inline-flex;align-items:center;flex:none;border-radius:var(--tab-radius,5px 5px 0 0);position:relative;max-width:280px}.tab-shell:has(.active){background:var(--tab-active-background,#fff);box-shadow:inset 0 1px #e3e7ec,inset 1px 0 #e3e7ec,inset -1px 0 #e3e7ec}'
     + '.tab { padding: var(--tab-padding,7px 10px); color:var(--tab-color,#68717e); border:0; min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'
-    + '  background: transparent; cursor: pointer; border-radius: 5px 5px 0 0;'
+    + '  background: transparent; cursor: pointer; border-radius: var(--tab-radius,5px 5px 0 0);'
     + '  font: inherit; font-size:var(--tab-font-size,inherit);font-weight:var(--tab-font-weight,normal); }'
     + '.tab.active { color:var(--tab-active-color,#293442); font-weight:var(--tab-active-weight,500); }'
     + '.tab-close{flex:none;width:19px;height:19px;margin-right:5px;padding:0;border:0;border-radius:4px;background:transparent;color:#87909c;font:15px/19px system-ui;cursor:pointer;opacity:0}.tab-shell:hover .tab-close,.tab-shell:focus-within .tab-close{opacity:1}.tab-close:hover{background:#e8ecf1;color:#374556}.tab:focus-visible,.tab-close:focus-visible{outline:2px solid #91a6c0;outline-offset:-2px}@media(hover:none){.tab-close{opacity:1}}'
@@ -243,6 +243,8 @@ function defineComponents() {
                     continue;
                 }
                 cell._handled = true;
+                // A hidden pane must not leave its sized region and splitter visible.
+                cell.style.display = child.style.display;
                 cell.classList.add(`split-${name}`);
                 const dimension = axis[name] === 'x' ? 'width' : 'height';
                 if (child.style[dimension]) {

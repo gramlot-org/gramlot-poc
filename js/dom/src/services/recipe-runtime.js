@@ -13,7 +13,7 @@ export class RecipeRuntime {
     /** Value-returning source-scoped evaluation; callers own effects and lifetime. */
     evaluate(node, code, extra = {}) {
         const [, attrs] = this.application.builder.runtimeValues(node);
-        const args = {...attrs, ...extra, genro:this.application, sourceNode:node};
+        const args = {...attrs, ...extra, gramlot:this.application, sourceNode:node};
         if (typeof code === 'function') return code.call(node,args.value,args,extra.signal);
         return executeScript(node, code, args);
     }

@@ -38,23 +38,23 @@ function mount() {
     setupDom();
     const root = document.createElement('div');
     document.body.appendChild(root);   // connect so connectedCallback runs
-    const genro = new Application(root, new TreePage('main'));
-    return { genro, el: root.querySelector('gnr-storetree') };
+    const gramlot = new Application(root, new TreePage('main'));
+    return { gramlot, el: root.querySelector('gnr-storetree') };
 }
 
 test('replacing a store branch updates the existing tree and preserves expansion', () => {
-    const {genro, el} = mount();
+    const {gramlot, el} = mount();
     const branch = el.shadowRoot.querySelector('details');
     branch.open = true;
     branch.dispatchEvent(new window.Event('toggle'));
     const replacement = new Bag();
     replacement.setItem('docs', new Bag(), {caption:'Updated documents'});
     replacement.setItem('docs.new', 'content', {caption:'New file'});
-    genro.live(() => genro.data.setItem('main.fs', replacement));
+    gramlot.live(() => gramlot.data.setItem('main.fs', replacement));
     assert.equal(el.storeBag, replacement);
     assert.match(el.shadowRoot.textContent, /New file/);
     assert.equal(el.shadowRoot.querySelector('details').open, true);
-    genro.dispose();
+    gramlot.dispose();
 });
 
 test('the data-widget receives the Bag branch as the .storeBag property', () => {
@@ -72,23 +72,23 @@ test('an externally attached store survives unrelated source reconciliation', ()
     }
     const root = document.createElement('div');
     document.body.appendChild(root);
-    const genro = new Application(root, new ExternalTreePage('main'));
+    const gramlot = new Application(root, new ExternalTreePage('main'));
     const el = root.querySelector('gnr-storetree');
     const external = new Bag();
     external.setItem('attached', 'value');
     el.storeBag = external;
-    genro.live(() => genro.builder.nodeById('tr').setAttr({labelAttribute:'name'}));
+    gramlot.live(() => gramlot.builder.nodeById('tr').setAttr({labelAttribute:'name'}));
     assert.equal(el.storeBag, external);
     assert.match(el.shadowRoot.textContent, /attached/);
-    genro.dispose();
+    gramlot.dispose();
 });
 
 test('a recipe-managed store is cleared when its pointer becomes empty', () => {
-    const {genro, el} = mount();
-    genro.live(() => genro.data.pop('main.fs'));
+    const {gramlot, el} = mount();
+    gramlot.live(() => gramlot.data.pop('main.fs'));
     assert.equal(el.storeBag, null);
     assert.equal(el.shadowRoot.querySelector('.leaf, details'), null);
-    genro.dispose();
+    gramlot.dispose();
 });
 
 test('renders one row per node, captions from labelAttribute', () => {
@@ -108,45 +108,45 @@ test('a Bag-valued node is an expandable branch; a plain value is a leaf', () =>
 });
 
 test('toggling a branch does not touch the datastore', () => {
-    const { genro, el } = mount();
+    const { gramlot, el } = mount();
     const details = el.shadowRoot.querySelector('details');
     details.open = true;
     details.dispatchEvent(new Event('toggle'));
     // the datastore is unchanged: expansion is widget-internal state
-    assert.ok(genro.data.getItem('main.fs.docs') instanceof Bag);
-    assert.equal(genro.data.getItem('main.fs.docs').getNodes().length, 1);
+    assert.ok(gramlot.data.getItem('main.fs.docs') instanceof Bag);
+    assert.equal(gramlot.data.getItem('main.fs.docs').getNodes().length, 1);
 });
 
 test('mutating a node under the branch redraws the tree', () => {
-    const { genro, el } = mount();
+    const { gramlot, el } = mount();
     assert.doesNotMatch(el.shadowRoot.textContent, /NewFile/);
-    genro.live(() => {
-        genro.data.setItem('main.fs.docs.newfile', 'x', { caption: 'NewFile' });
+    gramlot.live(() => {
+        gramlot.data.setItem('main.fs.docs.newfile', 'x', { caption: 'NewFile' });
     });
     assert.match(el.shadowRoot.textContent, /NewFile/, 'the widget redrew on Bag change');
 });
 
 test('adding a top-level node adds a row', () => {
-    const { genro, el } = mount();
-    genro.live(() => {
-        genro.data.setItem('main.fs.music', new Bag(), { caption: 'Music' });
+    const { gramlot, el } = mount();
+    gramlot.live(() => {
+        gramlot.data.setItem('main.fs.music', new Bag(), { caption: 'Music' });
     });
     assert.match(el.shadowRoot.textContent, /Music/);
     assert.equal(el.shadowRoot.querySelectorAll('details').length, 3);
 });
 
 test('clicking a branch writes its path into selectedPath', () => {
-    const { genro, el } = mount();
+    const { gramlot, el } = mount();
     const docs = el.shadowRoot.querySelector('summary');   // first branch = docs
     docs.click();
-    assert.equal(genro.data.getItem('main.ui.selected'), 'docs');
+    assert.equal(gramlot.data.getItem('main.ui.selected'), 'docs');
 });
 
 test('clicking a leaf writes its store-relative path', () => {
-    const { genro, el } = mount();
+    const { gramlot, el } = mount();
     const readme = el.shadowRoot.querySelector('.leaf');   // readme, under docs
     readme.click();
-    assert.equal(genro.data.getItem('main.ui.selected'), 'docs.readme');
+    assert.equal(gramlot.data.getItem('main.ui.selected'), 'docs.readme');
 });
 
 test('the selected row carries the selected class', () => {
@@ -173,15 +173,15 @@ test('a reader of selectedPath updates on selection', () => {
     }
     const root = document.createElement('div');
     document.body.appendChild(root);
-    const genro = new Application(root, new Page('main'));
+    const gramlot = new Application(root, new Page('main'));
 
     root.querySelector('gnr-storetree').shadowRoot.querySelector('summary').click();
-    assert.equal(genro.data.getItem('main.ui.sel'), 'docs');
+    assert.equal(gramlot.data.getItem('main.ui.sel'), 'docs');
     assert.match(root.querySelector('span').textContent, /docs/, 'the reader re-rendered');
 });
 
 test('optional row actions emit node and path without selecting the row', () => {
-    const {el, genro} = mount();
+    const {el, gramlot} = mount();
     assert.equal(el.shadowRoot.querySelector('.actions'), null);
     el.rowActions = [{id:'edit', icon:'✎', label:'Edit parameters'}];
     let detail;
@@ -190,17 +190,17 @@ test('optional row actions emit node and path without selecting the row', () => 
     assert.equal(detail.action, 'edit');
     assert.equal(detail.path, 'docs');
     assert.equal(detail.node, el.storeBag.getNode('docs'));
-    assert.equal(genro.builder.data.getItem('ui.selected'), null);
-    genro.live(() => genro.builder.data.setItem('fs.extra', 'value'));
+    assert.equal(gramlot.builder.data.getItem('ui.selected'), null);
+    gramlot.live(() => gramlot.builder.data.setItem('fs.extra', 'value'));
     assert.equal(el.shadowRoot.querySelectorAll('.actions button').length, 4);
     el.rowActions=[];
     assert.equal(el.shadowRoot.querySelector('.actions'), null);
-    genro.dispose();
+    gramlot.dispose();
 });
 
 test('lazy nodes load only on expansion, coalesce and reuse cached results', async () => {
     const {BagResolver} = await import('genro-bag-js');
-    const {genro, el} = mount();
+    const {gramlot, el} = mount();
     let calls = 0;
     let finish;
     class Lazy extends BagResolver {
@@ -229,12 +229,12 @@ test('lazy nodes load only on expansion, coalesce and reuse cached results', asy
     details.dispatchEvent(new window.Event('toggle'));
     await new Promise(resolve => setTimeout(resolve, 10));
     assert.equal(calls, 1, 'reopening uses the resolver cache');
-    genro.dispose();
+    gramlot.dispose();
 });
 
 test('lazy tree errors are visible and reopening retries', async () => {
     const {BagResolver} = await import('genro-bag-js');
-    const {genro, el} = mount();
+    const {gramlot, el} = mount();
     let calls = 0;
     class Failing extends BagResolver {
         async load() { if (++calls === 1) throw new Error('Offline'); return new Bag(); }
@@ -248,7 +248,7 @@ test('lazy tree errors are visible and reopening retries', async () => {
     details.open = true; details.dispatchEvent(new window.Event('toggle'));
     await new Promise(resolve => setTimeout(resolve, 10));
     assert.equal(calls, 2); assert.doesNotMatch(el.shadowRoot.textContent, /Offline/);
-    genro.dispose();
+    gramlot.dispose();
 });
 
 test('relationTree receives updated Data and owns compact dtype presentation', () => {

@@ -222,3 +222,26 @@ test('row activation exposes the record key for double-click and Enter', () => {
     grid.shadowRoot.querySelector('.row').dispatchEvent(new window.KeyboardEvent('keydown', {key:'Enter', bubbles:true}));
     assert.deepEqual(keys, [grid._store.rowAt(0).key, grid._store.rowAt(0).key]);
 });
+
+test('multiple selection supports ranges and Control toggles; none and single constrain it',()=>{
+    const grid=mount({bag:records(6)});
+    grid.selectionMode='multiple';
+    grid._choose('r_1','pointer');grid._choose('r_3','pointer',{shiftKey:true});
+    assert.deepEqual(grid.selectedKeys,['r_1','r_2','r_3']);
+    grid._choose('r_5','pointer',{ctrlKey:true});grid._choose('r_2','pointer',{ctrlKey:true});
+    assert.deepEqual(grid.selectedKeys,['r_1','r_3','r_5']);
+    grid.selectionMode='single';assert.equal(grid.selectedKeys.length,1);
+    grid.selectionMode='none';grid._choose('r_0','pointer');assert.deepEqual(grid.selectedKeys,[]);
+    grid.remove();
+});
+
+test('row moves preserve Bag nodes and reject reordered projections',()=>{
+    const bag=records(6),grid=mount({bag});
+    const node=bag.getNode('r_1');
+    assert.equal(grid.interactions.move('row',['r_1','r_3'],'r_5',true),true);
+    assert.deepEqual(bag.getNodes().map(n=>n.label),['r_0','r_2','r_4','r_5','r_1','r_3']);
+    assert.equal(bag.getNode('r_1'),node);
+    grid.collectionStore().sort('name');
+    assert.equal(grid.interactions.move('row',['r_1'],'r_0'),false);
+    grid.remove();
+});

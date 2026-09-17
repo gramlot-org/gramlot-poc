@@ -16,11 +16,12 @@ export function defineDbSelect(Base, {callback = false} = {}) {
         }
         connectedCallback() {
             super.connectedCallback();
-            if (!callback) this.sourceNode.handler.application.server.requireCapability();
+            if (!callback && !this.getAttribute('dbadapter')) this.sourceNode.handler.application.server.requireCapability();
         }
         disconnectedCallback() {
             clearTimeout(this._searchTimer);
             this._generation = (this._generation || 0) + 1;
+            this.sourceNode?.handler.application.database?.release(this);
             this.sourceNode?.handler.application.server.cancel(this);
             super.disconnectedCallback();
         }
@@ -72,7 +73,9 @@ export function defineDbSelect(Base, {callback = false} = {}) {
                     ? await (typeof attributes.callback === 'function'
                         ? attributes.callback.call(node, kw)
                         : app._recipeRuntime.evaluate(node, attributes.callback, {kw}))
-                    : await app.server.call(this.getAttribute('rpcmethod'), kw, {owner:this});
+                    : attributes.dbadapter
+                        ? await app.database.select(this, attributes, params)
+                        : await app.server.call(this.getAttribute('rpcmethod'), kw, {owner:this});
                 if (generation !== this._generation || !this.isConnected) return null;
                 if (!result || !Array.isArray(result.rows) || typeof result.identifier !== 'string' ||
                     typeof result.caption !== 'string') throw new Error('Invalid dbSelect selection response');

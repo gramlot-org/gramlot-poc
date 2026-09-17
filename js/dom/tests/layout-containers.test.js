@@ -26,8 +26,8 @@ function mountApp(PageClass) {
     setupDom();
     const host = document.createElement('div');
     document.body.appendChild(host);
-    const genro = new Application(host, new PageClass('main'));   // eslint-disable-line no-new
-    return { genro, host };
+    const gramlot = new Application(host, new PageClass('main'));   // eslint-disable-line no-new
+    return { gramlot, host };
 }
 
 class BorderPage extends HtmlBuilder {
@@ -47,14 +47,14 @@ test('tab close controls exist only for closable panes and preserve close guards
         static wc_requires=['layout'];
         main(root){const tabs=root.tabContainer();tabs.tab({title:'Fixed'});tabs.tab({title:'Document',closable:true});}
     }
-    const {genro,host}=mountApp(Page);
+    const {gramlot,host}=mountApp(Page);
     const tabs=host.querySelector('gnr-tabcontainer');
     assert.equal(tabs.shadowRoot.querySelectorAll('.tab-close').length,1);
     assert.equal(tabs.shadowRoot.querySelector('.tab-close').getAttribute('aria-label'),'Close Document');
     let closed=false;tabs.addEventListener('gnr-close-page',()=>{closed=true;});
     tabs.addEventListener('gnr-before-close',e=>e.preventDefault(),{once:true});
     tabs.closePage(1);assert.equal(closed,false);
-    tabs.closePage(1);assert.equal(closed,true);genro.dispose();
+    tabs.closePage(1);assert.equal(closed,true);gramlot.dispose();
 });
 
 test('borderContainer builds the five region cells and applies the design', () => {
@@ -117,37 +117,78 @@ test('tabContainer shows the selected pane; the strip has one button per tab', (
 });
 
 test('selection is data-driven: changing the pointer switches the pane', () => {
-    const { genro, host } = mountApp(TabPage);
-    genro.live(() => genro.data.setItem('main.ui.tab', 'two'));
+    const { gramlot, host } = mountApp(TabPage);
+    gramlot.live(() => gramlot.data.setItem('main.ui.tab', 'two'));
     assert.deepEqual(paneVis(host), { one: 'hidden', two: 'shown' });
     // the independent reader of ^ui.tab reflects it too
     assert.equal(host.querySelector('.selbox').textContent, 'two');
 });
 
 test('data-driven tab selection preserves uncommitted input and pane identity', () => {
-    const {genro, host} = mountApp(TabPage);
+    const {gramlot, host} = mountApp(TabPage);
     const tab = host.querySelector('gnr-tab');
     const input = tab.querySelector('gnr-textbox').shadowRoot.querySelector('input');
     input.value = 'Not committed yet';
     input.focus();
-    genro.live(() => genro.data.setItem('main.ui.tab', 'two'));
-    genro.live(() => genro.data.setItem('main.ui.tab', 'one'));
+    gramlot.live(() => gramlot.data.setItem('main.ui.tab', 'two'));
+    gramlot.live(() => gramlot.data.setItem('main.ui.tab', 'one'));
     assert.equal(host.querySelector('gnr-tab'), tab);
     assert.equal(tab.querySelector('gnr-textbox').shadowRoot.querySelector('input'), input);
     assert.equal(input.value, 'Not committed yet');
-    genro.live(() => genro.data.setItem('main.f.a', 'Updated by data'));
+    gramlot.live(() => gramlot.data.setItem('main.f.a', 'Updated by data'));
     assert.equal(tab.querySelector('gnr-textbox').value, 'Updated by data');
 });
 
 test('a parent selection update still applies a simultaneous child data update', () => {
-    const {genro, host} = mountApp(TabPage);
+    const {gramlot, host} = mountApp(TabPage);
     const container = host.querySelector('gnr-tabcontainer');
-    genro.live(() => {
-        genro.data.setItem('main.ui.tab', 'two');
-        genro.data.setItem('main.f.b', 'Fresh child');
+    gramlot.live(() => {
+        gramlot.data.setItem('main.ui.tab', 'two');
+        gramlot.data.setItem('main.f.b', 'Fresh child');
     });
     assert.equal(host.querySelector('gnr-tabcontainer'), container);
     assert.equal(host.querySelectorAll('gnr-textbox')[1].value, 'Fresh child');
+});
+
+test('adding and closing tabs preserves surviving iframe documents', () => {
+    class Page extends HtmlBuilder {
+        static wc_requires = ['layout'];
+        setup() { this.setData('active', 'one'); }
+        main(root) {
+            const tabs = root.tabContainer({node_id: 'tabs', selectedPage: '^active'});
+            tabs.contentPane({node_id: 'one-pane', pageName: 'one', title: 'One',
+                closable: true}).iframe({src: 'about:blank'});
+        }
+    }
+    const {gramlot, host} = mountApp(Page);
+    const tabsElement = host.querySelector('gnr-tabcontainer');
+    const firstFrame = host.querySelector('iframe');
+    const firstDocument = firstFrame.contentDocument;
+    firstFrame.runtimeState = {counter: 1};
+
+    gramlot.live(() => {
+        gramlot.builder.nodeById('tabs')
+            .contentPane({node_id: 'two-pane', pageName: 'two', title: 'Two', closable: true})
+            .iframe({src: 'about:blank'});
+        gramlot.data.setItem('main.active', 'two');
+    });
+
+    assert.equal(host.querySelector('gnr-tabcontainer'), tabsElement);
+    assert.equal(host.querySelectorAll('iframe').length, 2);
+    assert.equal(host.querySelector('iframe'), firstFrame);
+    assert.equal(firstFrame.contentDocument, firstDocument);
+    assert.deepEqual(firstFrame.runtimeState, {counter: 1});
+
+    const secondFrame = host.querySelectorAll('iframe')[1];
+    const secondDocument = secondFrame.contentDocument;
+    secondFrame.runtimeState = {quantity: 5};
+    tabsElement.closePage(0);
+
+    assert.equal(host.querySelectorAll('iframe').length, 1);
+    assert.equal(host.querySelector('iframe'), secondFrame);
+    assert.equal(secondFrame.contentDocument, secondDocument);
+    assert.deepEqual(secondFrame.runtimeState, {quantity: 5});
+    gramlot.dispose();
 });
 
 class ResizablePage extends HtmlBuilder {
@@ -161,7 +202,7 @@ class ResizablePage extends HtmlBuilder {
 }
 
 test('border design preserves resized region and local input; detach cancels drag', () => {
-    const {genro, host} = mountApp(ResizablePage);
+    const {gramlot, host} = mountApp(ResizablePage);
     const border = host.querySelector('gnr-bordercontainer');
     const left = border.shadowRoot.querySelector('.region.left');
     const input = border.querySelector('gnr-textbox').shadowRoot.querySelector('input');
@@ -169,7 +210,7 @@ test('border design preserves resized region and local input; detach cancels dra
     left.querySelector('.handle').dispatchEvent(new (window.PointerEvent || window.MouseEvent)(window.PointerEvent ? 'pointerdown' : 'mousedown'));
     window.dispatchEvent(new (window.PointerEvent || window.MouseEvent)(window.PointerEvent ? 'pointermove' : 'mousemove', {clientX:180}));
     assert.equal(left.style.width, '180px');
-    genro.live(() => genro.data.setItem('main.design', 'sidebar'));
+    gramlot.live(() => gramlot.data.setItem('main.design', 'sidebar'));
     assert.equal(host.querySelector('gnr-bordercontainer'), border);
     assert.equal(left.style.width, '180px');
     assert.equal(input.value, 'Local');
@@ -179,10 +220,10 @@ test('border design preserves resized region and local input; detach cancels dra
 });
 
 test('a tab click writes the bound pointer (write-back, no data-set-pointer)', () => {
-    const { genro, host } = mountApp(TabPage);
+    const { gramlot, host } = mountApp(TabPage);
     const tc = host.querySelector('gnr-tabcontainer');
     tc.shadowRoot.querySelector('.tab[data-key="two"]').click();
-    assert.equal(genro.data.getItem('main.ui.tab'), 'two');   // the click mutated the datum
+    assert.equal(gramlot.data.getItem('main.ui.tab'), 'two');   // the click mutated the datum
     assert.deepEqual(paneVis(host), { one: 'hidden', two: 'shown' });
 });
 
@@ -268,12 +309,12 @@ test('legacy contentPane region routes panes and enables its splitter', () => {
             layout.contentPane({region:'bottom',height:'30px'}).div('Footer');
         }
     }
-    const {genro,host} = mountApp(RegionPage);
+    const {gramlot,host} = mountApp(RegionPage);
     const border = host.querySelector('gnr-bordercontainer');
     assert.deepEqual([...border.children].map(pane=>pane.getAttribute('slot')), ['top','left','','bottom']);
     assert.ok(border.shadowRoot.querySelector('.region.left .handle'));
     assert.ok(border.shadowRoot.querySelector('.region.left .drawer-toggle'));
-    genro.dispose(); host.remove();
+    gramlot.dispose(); host.remove();
 });
 
 test('reactive splitter pane width opens its owned region from zero', () => {
@@ -298,4 +339,29 @@ test('reactive splitter pane width opens its owned region from zero', () => {
     app.live(()=>app.data.setItem('main.width','0px'));
     assert.equal(region.style.width,'0px');
     app.dispose();host.remove();
+});
+
+
+test('initially hidden splitter pane releases its region and restores it on demand', () => {
+    setupDom();
+    class Page extends HtmlBuilder {
+        static wc_requires = ['layout'];
+        main(root) {
+            root.dataSetter({destination:'sourceDisplay',value:'none'});
+            const layout = root.borderContainer({height:'300px'});
+            layout.contentPane({region:'center'}).div('Application');
+            layout.contentPane({region:'right',width:'420px',splitter:true,
+                display:'^sourceDisplay'}).pre('Source');
+        }
+    }
+    const host = document.body.appendChild(document.createElement('div'));
+    const app = new Application(host, new Page('main'));
+    const region = host.querySelector('gnr-bordercontainer').shadowRoot.querySelector('.region.right');
+    assert.equal(region.style.display, 'none');
+    app.live(() => app.data.setItem('main.sourceDisplay', 'block'));
+    assert.equal(region.style.display, 'block');
+    assert.equal(region.style.width, '420px');
+    app.live(() => app.data.setItem('main.sourceDisplay', 'none'));
+    assert.equal(region.style.display, 'none');
+    app.dispose(); host.remove();
 });

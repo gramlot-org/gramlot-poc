@@ -1,3 +1,4 @@
+import {validationMessageStyle} from '../components/validation-style.js';
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 import {parseDateExpression} from '../date-parser/index.js';
 import {formatCivil} from './date-calendar.js';
@@ -17,6 +18,7 @@ export class SymbolicDateEditor {
         this.host=host; this.input=input; this.editing=false; this.committed=null;
         const doc=host.ownerDocument;
         this.message=doc.createElement('small'); this.message.id='date-message';
+        this.message.style.cssText = validationMessageStyle;
         this.message.setAttribute('aria-live','polite'); this.message.hidden=true;
         this.tools=host.installTools({onLeave:()=>this.confirm(), onCancel:()=>this.cancel()});
         this.calendar=doc.createElement('gnr-datecalendar');

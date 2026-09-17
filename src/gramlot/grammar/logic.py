@@ -6,6 +6,18 @@ from genro_builders.builder import element
 class LogicElementDeclarations:
     """Gramlot-owned server provider tags added to the generic HTML grammar."""
 
+    @element(sub_tags='', _meta={'data_element': 'store'})
+    def bagDb(self, **kwargs): ...
+
+    @element(sub_tags='', _meta={'data_element': 'controller'})
+    def dataRecord(self, **kwargs): ...
+
+    @element(sub_tags='', _meta={'data_element': 'controller'})
+    def dataRelationTree(self, **kwargs): ...
+
+    @element(sub_tags='', _meta={'data_element': 'controller'})
+    def dataSelection(self, **kwargs): ...
+
     @element(sub_tags='', _meta={'data_element': 'rpc'})
     def dataRpc(self, **kwargs): ...
 
@@ -21,6 +33,44 @@ class LogicElementDeclarations:
 
 class LogicDeclarations:
     """Mixin for the :class:`gramlot.builder.AuthoringNode` facade."""
+
+    def bagDb(self, *, adapter, source, tables):
+        """Register a Source-owned local BagDB from an immutable fixture snapshot."""
+        if not all(isinstance(v, str) and v for v in (adapter, source)):
+            raise TypeError('bagDb requires adapter and a Data source path')
+        if not isinstance(tables, dict) or not tables:
+            raise TypeError('bagDb requires a table registry')
+        return self._declaration('bagDb', adapter=adapter, source=source, tables=tables)
+
+    def dataRelationTree(self, destination, *, adapter, dbtable, maxDepth=3,
+                         maxNodes=100, statuspath=None, _on_start=True):
+        """Materialize bounded model metadata for the shared storeTree component."""
+        return self._database_read('dataRelationTree', destination, adapter, dbtable,
+                                   maxDepth=maxDepth, maxNodes=maxNodes,
+                                   statuspath=statuspath, _on_start=_on_start)
+
+    def dataRecord(self, destination, *, adapter, dbtable, pkey, fields=None,
+                   statuspath=None, _on_start=True):
+        """Read one record through a named JS adapter; missing writes None."""
+        return self._database_read('dataRecord', destination, adapter, dbtable,
+                                   pkey=pkey, fields=fields, statuspath=statuspath,
+                                   _on_start=_on_start)
+
+    def dataSelection(self, destination, *, adapter, dbtable, where=None, fields=None,
+                      orderBy=None, limit=50, statuspath=None, _on_start=True):
+        """Read a bounded collection into a Bag with row attributes for grids."""
+        return self._database_read('dataSelection', destination, adapter, dbtable,
+                                   where=where, fields=fields, orderBy=orderBy,
+                                   limit=limit, statuspath=statuspath, _on_start=_on_start)
+
+    def _database_read(self, tag, destination, adapter, dbtable, **attrs):
+        if not all(isinstance(v, str) and v for v in (destination, adapter, dbtable)):
+            raise TypeError('Database reads require destination, adapter and dbtable')
+        result = self._declaration(tag, destination=destination, adapter=adapter,
+                                  dbtable=dbtable, **attrs)
+        if tag == 'dataRecord' and attrs.get('pkey') is None:
+            result.node.set_attr({'pkey': None}, _remove_null_attributes=False)
+        return result
 
     def dataSetter(self, destination, value, **attrs):
         """Assign ``value`` to a Data destination when this branch is installed."""
@@ -70,7 +120,31 @@ class LogicDeclarations:
             raise TypeError('Service method must be a nonempty logical name')
         return method
 
-    def dbSelect(self, *, rpcmethod, **attrs):
+    def dbSelect(self, *, rpcmethod=None, dbtable=None, dbadapter=None, **attrs):
+        if dbadapter is not None:
+            if rpcmethod is not None or not dbtable:
+                raise TypeError("Local dbSelect requires dbtable and no rpcmethod")
+            return self._declaration("dbSelect", dbadapter=dbadapter, dbtable=dbtable, **attrs)
+        if rpcmethod is None:
+            if not isinstance(dbtable, str) or not dbtable:
+                raise TypeError('dbSelect requires dbtable or an explicit rpcmethod')
+            unsupported = {'auxColumns', 'columns', 'hiddenColumns', 'rowcaption',
+                           'condition', 'exclude', 'order_by', 'alternatePkey',
+                           'weakCondition', 'preferred', 'invalidItemCondition',
+                           'excludeDraft', 'subtable', 'ignorePartition', 'dbstore',
+                           '_storename', 'selectmethod', 'applymethod', 'method', 'table',
+                           'distinct', 'selectedRecord', 'auxColumns_template'}
+            rejected = set(attrs) & unsupported
+            rejected.update(k for k in attrs if k.startswith(('condition_', 'kw_')))
+            rejected.update(k for k in attrs if k.startswith('selected_')
+                            and k not in ('selected_id', 'selected_caption'))
+            if rejected:
+                raise ValueError('Minimum dbSelect does not support: ' + ', '.join(sorted(rejected)))
+            attrs.update(kw_dbtable=dbtable, kw_ignoreCase=attrs.pop('ignoreCase', True),
+                         kw_limit=attrs.pop('limit', 10))
+            rpcmethod = 'dbhandler.dbselect'
+        elif dbtable is not None:
+            attrs['dbtable'] = dbtable
         return self._declaration("dbSelect", rpcmethod=self._page_method_reference(rpcmethod, "data"), **attrs)
 
     def remoteSelect(self, *, rpcmethod, **attrs):

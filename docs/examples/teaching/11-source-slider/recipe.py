@@ -9,7 +9,7 @@ class Page(WebPage):
                                   minimum=0, maximum=10, discreteValues=11,
                                   updateOn="input", lbl="Visible contacts")
         controls.button("Generate contacts",
-                        action="window.contactData.populate(this, genro.data.constructor)")
+                        action="window.contactData.populate(this, gramlot.data.constructor)")
         cards = root.formlet(col_min_width="280px", gap="12px", class_="contact-cards")
         cards.dataController("""
 const length = contacts ? contacts.length : 0;

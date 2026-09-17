@@ -1,18 +1,86 @@
 # Canonical workspace and retirement map
 
-Updated: 2026-09-09. Operational location policy requested by the owner; this is not an API redesign.
+## Repository split completed — 2026-09-16
+
+This section supersedes the earlier single-framework layout below.
+
+- Living laboratory: `/Users/gporcari/Sviluppo/gramlot/gramlot-poc`;
+  GitHub `gramlot-org/gramlot-poc` retains repository ID 1361915318.
+- Clean product: `/Users/gporcari/Sviluppo/gramlot/gramlot`;
+  new Git history, constitution and product documentation only at bootstrap.
+- Existing historical compatibility symlinks point to the PoC. Both linked
+  worktrees are preserved and their Git pointers resolve into `gramlot-poc/.git`.
+- Current FastAPI/Django development environments explicitly use `../gramlot-poc`;
+  new-core compatibility must be introduced through reviewed contracts.
+- The old Codex project identity follows `gramlot-poc`; a separate project owns
+  the clean product. Existing conversations are not rewritten.
+- Recovery checkpoint: workspace `.migration/20260916-repository-split/`, containing
+  verified full copies of eight checkouts/worktrees, ignored files and Git states.
+  Preserve privately; do not publish this directory.
+
+The parent `start-demos.py` uses the PoC and the extracted Django adapter, preserving
+its existing demo database. Generic Builders/Bag/TYTX and other source repositories
+remain independent. No package publication or application deployment is included.
+
+
+Updated: 2026-09-15. The owner moved the active Gramlot workspace to `/Users/gporcari/Sviluppo/gramlot`. Earlier dated sections below are historical evidence.
 
 ## One active framework
 
 The only active framework checkout is:
 
-`/Users/gporcari/Sviluppo/genro_ng/meta-genro-modules/sub-projects/gramlot`
+`/Users/gporcari/Sviluppo/gramlot/gramlot`
 
 Python code belongs in `src/gramlot`, DOM runtime in `js/dom`, browser page modules in `js/pages`. Keep maintained documentation here; use this repository's `temp/` for local drafts and verification. Do not create new development checkouts or deliverables under `Documents/ChatGPT`. Resolve any future worktree location explicitly under Sviluppo.
 
 Generic Builders, Bag, TYTX and server repositories remain independent. Their experimental worktrees are not alternate Gramlot development locations.
 
-## Current locations
+## Relocation completed — 2026-09-15
+
+The workspace root is `/Users/gporcari/Sviluppo/gramlot`:
+
+| Directory | Role |
+| --- | --- |
+| `gramlot/` | Framework, including Python, JavaScript, examples and recorded context |
+| `gramlot-site/` | Product site |
+| `gramlot-rosetta/` | Comparison application |
+| `worktrees/gramlot-datarpc-poc/` | Existing Gramlot Data RPC worktree |
+| `worktrees/genropy-gramlot-pages/` | Existing legacy integration worktree; Git history remains owned by Genropy |
+| `worktrees/gramlot-chartbox-codex` | Link to the app-managed worktree; its physical location is unchanged |
+
+The five previous checkout locations are retained as absolute symbolic links.
+Keep these compatibility links: prior conversations, virtualenv launchers,
+editable installs and integrations can still reference them. The missing
+historical `/Users/gporcari/Documents/ChatGPT/gramlot` path was also restored as a
+compatibility link for two existing tasks. Historical Pages and Rosetta recovery
+worktrees remain where they were; Git administrative pointers were repaired.
+
+A private same-disk recovery snapshot is under
+`/Users/gporcari/Sviluppo/gramlot/.migration/20260915`. It contains complete copies
+of the five checkout directories, including ignored/untracked files, checked file
+manifests, Git state, Codex/Claude transcript snapshots and consistent SQLite
+backups. It is not an off-machine disaster recovery backup. Do not commit it.
+
+All five checkout file inventories, Git HEADs, refs, working changes and remotes
+were verified after the move. All 157 related Codex thread IDs and transcript
+paths remain accessible. Existing Claude project histories remain in
+`~/.claude/projects`; they are not merged or renamed. A new Claude session from
+a new directory may have a separate project session picker: resume older work
+from its original project context when needed. Original transcripts are preserved.
+
+Codex project roots were updated through the installed app-server protocol,
+retaining the existing internal project IDs. The running desktop still reports
+old roots from its legacy sidebar cache and overwrites direct cache edits.
+Reload/reopen it before starting new work; if old roots remain, update the
+directory on the existing projects rather than deleting/recreating them. A task already running at relocation
+can retain its old sandbox root, which cannot be a symlink. Use the canonical
+physical directory when resuming that task; do not weaken sandbox permissions.
+
+For future work read `/Users/gporcari/Sviluppo/gramlot/README.md`. Do not recreate
+repositories, reinitialize Git, discard dirty files, prune recovery worktrees or
+rewrite historical transcripts to update paths.
+
+## Historical location table — 2026-09-09
 
 | Location | Role and action |
 | --- | --- |

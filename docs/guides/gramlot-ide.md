@@ -102,8 +102,9 @@ and workspace are empty. Committing a path loads its workspace through @source;
 clearing it empties the center. Each folder has a separate Data namespace.
 This local-only application accepts absolute paths (including `~` expansion)
 and permits revision-checked Save after the user unlocks a document. Generic filesystem pages retain named-root
-allowlists. The temporary writable demo
-remains separate. `--ide-tree-width` adjusts the initial file-tree width.
+allowlists. The example at `/page/gramlot-ide/` now uses the same folder-path
+workflow, with its Python source visible; it replaces the temporary-file demo.
+Its source is `docs/examples/triangle-rpc/pages/gramlot-ide.py`. `--ide-tree-width` adjusts the initial file-tree width.
 
 Complex components may construct Gramlot Source with the JavaScript builder.
 The current IDE reuses framework widgets but still assembles its internal shell
@@ -117,30 +118,42 @@ the last successfully saved text (it does not reload external disk changes).
 Editor instances and lock state survive tab changes. Save remains subject to
 server permissions and revision checks; generic read-only providers stay read-only.
 
-### HTML views (initial integration)
+### HTML views — Jodit Community
 
-HTML documents have Code, Preview and Rich text toolbar buttons selecting panes
-in a shared stackContainer. The preview uses a sandboxed iframe without script,
-form or same-origin permissions. Relative local assets are not resolved yet.
-The rich-text pane loads ProseMirror on demand from pinned esm.sh modules and
-shares the document content, editing lock, Save and Revert with CodeMirror.
-Rich text displays the complete page in an isolated iframe, including embedded
-CSS. Clicking a supported text region mounts ProseMirror directly in that region
-when editing is unlocked. There is no block selector. Bold, Italic, Undo and Redo
-act on the active region; Enter inserts a line break within it. Relocking makes
-the active editor read-only. Only the selected region's inner content is updated;
-its attributes, surrounding layout, head, comments and scripts are retained in
-the inert parsed document. Page scripts and navigation do not run in this view;
-external resources are blocked. Rich text edits content, not the page layout.
-Unsupported inline structures are not flattened; supported nested text regions
-can be edited separately. DOM serialization may normalize HTML formatting.
-Undo history is local to the active region; Revert restores the whole document.
-Verified with an isolated browser and a synthetic HTML page: full document display,
-inline editing, paragraph switch, serialization and read-only lock.
-Network access is
-required for editor dependencies; load errors are displayed in the pane.
+HTML documents have Code, Preview and Rich text panes sharing the same Data Bag,
+editing lock, Save and Revert. Rich text uses Jodit Community 4.13.9, loaded on
+demand from the packaged local browser assets (matching JavaScript and CSS
+versions). Loading failure leaves Code available and displays an error. The existing `gnr-proseeditor` runtime tag
+is retained for compatibility; its HTML implementation is now Jodit.
 
-Reference: https://prosemirror.net/docs/guide/ (schema-based editing).
+The toolbar includes headings, fonts, sizes, colours, inline formatting, lists,
+indentation, alignment, links, images, tables, search, undo/redo and fullscreen.
+Images uploaded in this prototype are embedded as base64 in the document; no
+upload server is configured. External image URLs are not fetched by the rich
+iframe. Markdown continues to use its separate editor.
+
+For full HTML pages, Gramlot preserves the original doctype, head and body
+attributes and edits the body. Embedded head styles are applied inside the
+isolated editor iframe. Scripts, embedded documents and other protected nodes
+appear as labelled placeholders and are restored from the original parsed tree
+when serializing. Removing or duplicating such a placeholder rejects that edit
+with an error and restores the previous editor content; use Code for those changes. Event attributes are removed from the
+editing copy and restored on their surviving elements. The iframe CSP blocks
+page scripts, forms and external resources. DOM serialization and Jodit may
+normalize body markup: this is a rich content editor, not a lossless page builder.
+Opening or unlocking alone does not change the document value.
+
+The Python-authored `/page/html-editor/` example offers an unsaved scratch HTML
+document to try the toolbar, Code synchronization and Revert without disk writes.
+Jodit Community is MIT licensed; retain its copyright and permission notice.
+Validation covers shared Code synchronization, read-only lock and Revert,
+full-document preservation, selection formatting and insertion of a 2×2 table.
+The toolbar lives in the component shadow tree, but Jodit is not configured
+with that ShadowRoot: its editable content lives in an iframe. This keeps both
+text selection and table hit testing in the editing document. Popup CSS
+is installed in both the component shadow tree and the owner document.
+No Pro plugins are included. See [upstream license](https://github.com/xdan/jodit/blob/4.13.9/LICENSE.txt)
+and [source](https://github.com/xdan/jodit).
 
 ## Host-rendered preview
 
@@ -152,17 +165,48 @@ Stale responses after edits, disposal or a newer preview request are ignored.
 The result stays in the existing sandboxed iframe; scripts and forms remain
 inactive. Relative resources can be resolved by a provider-supplied base URL.
 
-Inline editing activates on pointer press, before text selection. The formatting
-bar reports locked/ready/editing state and enables applicable commands: Bold,
-Italic, Underline, Strikethrough, Code, Clear formatting, Undo and Redo. Mark
-buttons reflect the current selection. HTML with an implicit head (no explicit
-html wrapper) retains its title, metadata and CSS when serialized after editing.
-Verified using an in-memory copy of stato_attuale.html: heading edit, selection,
-underline, undo and stylesheet preservation; no source file was written.
+## Markdown and the inventory workspace
 
-WebKit keyboard regression: disabling iframe scripting also disables the editing
-handlers installed by the parent. The rich iframe therefore allows scripting at
-the sandbox level, while sanitized srcdoc and CSP `script-src 'none'` block the
-HTML document's scripts. Script nodes and event attributes are removed only from
-the displayed copy. Actual keyboard input after a click, followed by Revert, is
-verified on the autonomous FastAPI IDE in WebKit as well as Chromium.
+The master example application includes **Gramlot Inventory** at
+`/page/gramlot-inventory/`. Its ordinary Python page configures the named
+`inventory` filesystem root to the framework's `gramlot_inventory` directory
+and initially opens `README.md`. Save uses the existing revision-checked
+filesystem endpoint and requires unlocking the document.
+
+The shared IDE now gives `.md` and `.markdown` files three views:
+
+- **Raw:** CodeMirror editing of the stored Markdown text.
+- **Preview:** rendered Markdown in a sandboxed iframe, refreshed from the current
+  document, including unsaved changes. Embedded HTML is escaped; scripts and
+  external resources are blocked. Relative document links do not yet navigate
+  the IDE workspace: use the file tree to open another card.
+- **Rich text:** ProseMirror editing of ordinary headings, paragraphs, lists and
+  inline formatting. Its value is serialized back to Markdown, never HTML.
+  Rich edits may normalize Markdown whitespace and marker style.
+
+Tables, embedded HTML and unsupported inline strikethrough are preserved as
+opaque source-backed blocks in the rich view and edited in Raw. Documents with
+reference-link definitions or YAML front matter remain opaque in rich mode to
+avoid dropping syntax outside the supported schema. This is not a complete
+visual editor for every Markdown extension. Opening a view alone does not
+serialize or mark the document dirty.
+
+Markdown dependencies load on demand from pinned esm.sh URLs, following the
+existing editor integration pattern. If loading fails, Raw stays usable.
+The implementation uses [ProseMirror Markdown](https://github.com/ProseMirror/prosemirror-markdown)
+for structured parsing/serialization and [markdown-it](https://github.com/markdown-it/markdown-it)
+for rendering. The legacy proseMirrorEditor exposes HTML/JSON and Markdown-like
+input rules; it does not establish a Markdown file round-trip contract.
+
+Verification covers the shared IDE's document/toolbar/HTML regressions plus
+Markdown lock, rich-to-Raw state synchronization and Revert. Browser checks
+confirmed navigation, preview rendering, visual edits and reverting without
+saving inventory changes.
+
+### Table editing plugins
+
+The local Jodit loader explicitly includes `select`, `select-cells`,
+`resize-cells` and `table-keyboard-navigation`. Click a cell while editing is
+unlocked to open commands for rows, columns, merging, splitting and deletion.
+Browser validation confirmed inserting a row below and synchronizing the extra
+`tr` and cells into the IDE Code view. Revert restores the original document.

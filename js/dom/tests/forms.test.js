@@ -347,7 +347,7 @@ test('an explicit null write differs from a missing node and is dirty until rest
 
 test('form commands use source scope through slotted containers', async () => {
     const {app,host,widget} = mount({}, form => {
-        form.button('Save', {action:"this.getFormHandler().save().then(result => genro.publish('saved', result.status));"});
+        form.button('Save', {action:"this.getFormHandler().save().then(result => gramlot.publish('saved', result.status));"});
     });
     const results=[];
     app.subscribe('saved', status => results.push(status));

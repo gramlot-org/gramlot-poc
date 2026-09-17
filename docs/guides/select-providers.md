@@ -1,5 +1,17 @@
 # Remote and callback selects
 
+## Minimal database service
+
+`pane.dbSelect(dbtable='invc.customer', value='^customer_id', ignoreCase=True)`
+now selects the experimental common `dbhandler.dbselect` endpoint. A page using
+`DbPageMixin` receives a configured `DbHandler` service from its host
+setup. The optional SQLite adapter provides read-only identity/caption queries.
+See the [SQLite example](../examples/sqlite-dbselect/README.md) for setup,
+prefix/containment semantics and the deliberately bounded feature set.
+An explicit `rpcmethod` continues to select the existing custom-provider path.
+
+## Custom providers
+
 The complete [generated parameter reference](../source/reference/select-providers.rst)
 covers dbSelect, remoteSelect and callbackSelect, including provider requests,
 responses and complete minimal Python examples. Its source is

@@ -1,0 +1,50 @@
+[
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.152645",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.152649",
+    "code": "EFT",
+    "description": "Bank Transfer (EFT)"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.153057",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.153062",
+    "code": "CC",
+    "description": "Credit Card"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.153230",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.153233",
+    "code": "CSH",
+    "description": "Cash"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.153371",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.153375",
+    "code": "EFTPOS",
+    "description": "EFTPOS"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.153499",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.153503",
+    "code": "BPAY",
+    "description": "BPAY"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.153625",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.153629",
+    "code": "DD",
+    "description": "Direct Debit"
+  }
+]

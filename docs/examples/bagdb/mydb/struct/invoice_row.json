@@ -1,0 +1,196 @@
+{
+  "table": "invoice_row",
+  "sourceTable": "invc.invoice_row",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "_row_count": {
+      "dtype": "L",
+      "sourceDtype": "L",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "_row_count"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "invoice_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Invoice",
+      "sourceReference": "invoice.id",
+      "references": "invoice.id"
+    },
+    "product_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Product",
+      "sourceReference": "product.id",
+      "references": "product.id"
+    },
+    "quantity": {
+      "dtype": "L",
+      "sourceDtype": "I",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Quantity"
+    },
+    "tot_price": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Total price"
+    },
+    "unit_price": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Unit price"
+    },
+    "vat": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "VAT"
+    },
+    "vat_rate": {
+      "dtype": "T",
+      "sourceDtype": "perc",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Vat rate"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "customer_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "product_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "customer_state",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "line_total",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "line_vat",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "line_gross",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "size_category",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "product_note",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "effective_price",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "is_expensive",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "needs_review",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "pricing_analysis",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "customer_region",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "product_code_prefix",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "rounded_total",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "abs_discount",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "prev_quantity",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "matches_list_price",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "distinct_products_in_invoice",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "is_exempt_vat",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "invoice_date_static",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "adjusted_total",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "customer_id",
+      "kind": "aliasColumn"
+    }
+  ]
+}

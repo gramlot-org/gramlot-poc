@@ -57,12 +57,12 @@ test('mutate() writes the datum and updates the other reader', () => {
     setupDom();
     const root = document.createElement('div');
     const page = new FormPage('main');
-    const genro = new Application(root, page);
+    const gramlot = new Application(root, page);
 
     const input = root.querySelector('input');
-    genro.mutate(input.id, 'Mario');
+    gramlot.mutate(input.id, 'Mario');
 
-    assert.equal(genro.data.getItem('main.form.name'), 'Mario');
+    assert.equal(gramlot.data.getItem('main.form.name'), 'Mario');
     assert.equal(root.querySelector('span').textContent, 'Mario');
 });
 
@@ -70,10 +70,10 @@ test('anti-echo: the originating node is not re-rendered (reason)', () => {
     setupDom();
     const root = document.createElement('div');
     const page = new FormPage('main');
-    const genro = new Application(root, page);
+    const gramlot = new Application(root, page);
 
     const input = root.querySelector('input');
-    genro.mutate(input.id, 'Mario');
+    gramlot.mutate(input.id, 'Mario');
 
     // the other reader updated…
     assert.equal(root.querySelector('span').textContent, 'Mario');
@@ -86,27 +86,27 @@ test('default updateOn blur: writes on change, NOT on each input event', () => {
     setupDom();
     const root = document.createElement('div');
     const page = new FormPage('main');
-    const genro = new Application(root, page);
+    const gramlot = new Application(root, page);
 
     const input = root.querySelector('input');
     input.value = 'Anna';
     fire(input, 'input');   // keystroke — must NOT write yet (default blur)
-    assert.equal(genro.data.getItem('main.form.name'), '');
+    assert.equal(gramlot.data.getItem('main.form.name'), '');
 
     fire(input, 'change');  // focus lost / tab / click-out — writes now
-    assert.equal(genro.data.getItem('main.form.name'), 'Anna');
+    assert.equal(gramlot.data.getItem('main.form.name'), 'Anna');
 });
 
 test('updateOn "input": writes live on each input event', () => {
     setupDom();
     const root = document.createElement('div');
     const page = new LiveFormPage('main');
-    const genro = new Application(root, page);
+    const gramlot = new Application(root, page);
 
     const input = root.querySelector('input');
     input.value = 'Ann';
     fire(input, 'input');
-    assert.equal(genro.data.getItem('main.form.name'), 'Ann');
+    assert.equal(gramlot.data.getItem('main.form.name'), 'Ann');
     assert.equal(root.querySelector('span').textContent, 'Ann');
 });
 

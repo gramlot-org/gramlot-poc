@@ -199,6 +199,8 @@ The base style uses 13px text, centered headers, alternating row backgrounds and
 right-aligned numeric cells. CSS custom properties `--grid-font`,
 `--grid-header-bg`, `--grid-row-bg`, `--grid-stripe-bg`, `--grid-hover-bg` and
 `--grid-selected-bg` customize this shared style through the grid host.
+The empty viewport and horizontal scroll area are transparent by default;
+set `--grid-bg` on the grid host when an opaque background is needed.
 
 Set `frozenColumns=1` to keep the first column visible during horizontal scrolling,
 or a larger count for the first N columns. The default is 0. Headers and cells
@@ -262,7 +264,7 @@ The endpoint returns `{'rows': [record, ...], 'identifier': 'id', 'metadata': {.
 through ordinary TYTX RPC. The explicit RPC-store consumer validates keys and
 constructs attribute-backed Bag rows. Arbitrary JSON dataRpc results are unchanged.
 `GenropyPage.selection_result(fetched_rows, identifier='id')` supplies this shape
-for legacy named query rows. See the [executable states page](../examples/states-grid/pages/states.py).
+for legacy named query rows. See the [executable states page](https://github.com/gramlot-org/gramlot-fastapi/blob/develop/src/gramlot_fastapi/_examples/genropy/pages/states.py).
 
 Use `root.bagStore(storeCode='rows', storepath='rows', _identifier='id',
 datamode='attr')` for a resident collection. Multiple grids may borrow one store;

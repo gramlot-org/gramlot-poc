@@ -114,9 +114,20 @@ export class DomTarget extends TargetWrapper {
             el.locale = next.locale;
             el.structBag = next.structBag;
             el.columns = next.columns;
+            el.selectionMode = next.selectionMode;
+            el.selfDragRows = next.selfDragRows; el.selfDragColumns = next.selfDragColumns;
             el.frozenColumns = next.frozenColumns;
+            if (el.footer !== next.footer) el.footer = next.footer;
+            if (el.rowHeaders !== next.rowHeaders) el.rowHeaders = next.rowHeaders;
+            if (el.rowResize !== next.rowResize) el.rowResize = next.rowResize;
+            if (el.autoRowHeight !== next.autoRowHeight) el.autoRowHeight = next.autoRowHeight;
+            if (el.statusBar !== next.statusBar || el.statusTarget !== next.statusTarget) {
+                el.statusTarget = next.statusTarget;
+                el.statusBar = next.statusBar;
+            }
             el.rowHeight = next.rowHeight;
-            el.selectedKey = next.selectedKey;
+            if(next.sourceNode?.getAttr('selectedKey')!=null)el.selectedKey = next.selectedKey;
+            if(next.sourceNode?.getAttr('selectedKeys')!=null)el.selectedKeys = next.selectedKeys;
             // Grid-owned Source editor children occupy a stable shadow slot.
             const wanted = new Set([...next.children].map(child => child.id));
             for (const child of [...el.children]) if (!wanted.has(child.id)) child.remove();
@@ -154,6 +165,36 @@ export class DomTarget extends TargetWrapper {
             if (direct && next.hasAttribute('data-value-pointer') && String(el.value) !== String(next.value)) return false;
             if (direct && next.hasAttribute('data-checked-pointer') && el.checked !== next.checked) return false;
             return prior.isEqualNode(next.cloneNode(false)) && el.innerHTML === next.innerHTML;
+        }
+        // Adding or closing a tab must not detach the other iframe documents.
+        // Match stable Source target ids and leave survivors in their current DOM
+        // position. Reordering existing tabs is outside this incremental case.
+        if (el.localName === 'gnr-tabcontainer' && [...oldChildren, ...newChildren].every(
+            child => child.nodeType === 1 && child.id)) {
+            const oldIds = oldChildren.map(child => child.id);
+            const newIds = newChildren.map(child => child.id);
+            const retained = oldIds.filter(id => newIds.includes(id));
+            if (new Set(oldIds).size === oldIds.length && new Set(newIds).size === newIds.length
+                && retained.join('\0') === newIds.filter(id => oldIds.includes(id)).join('\0')) {
+                this._patchAttributes(el, next, prior, names);
+                for (const child of oldChildren) if (!newIds.includes(child.id)) child.remove();
+                let cursor = el.firstChild;
+                for (const fresh of newChildren) {
+                    if (this._disposed) return true;
+                    if (cursor?.id === fresh.id) {
+                        const current = cursor;
+                        cursor = cursor.nextSibling;
+                        if (!this._reconcile(current, fresh)) {
+                            this._remember(fresh);
+                            current.replaceWith(fresh);
+                        }
+                    } else {
+                        this._remember(fresh);
+                        el.insertBefore(fresh, cursor);
+                    }
+                }
+                return true;
+            }
         }
         if (oldChildren.length !== newChildren.length || oldChildren.some((child, i) => {
             const fresh = newChildren[i];

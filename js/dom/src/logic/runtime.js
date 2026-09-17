@@ -63,8 +63,11 @@ export class LogicRuntime {
                 this.builder.handler.application.stores.register(node);
             }
         }
+        for (const node of fresh) {
+            if (node.nodeTag === 'bagDb') this.builder.handler.application.database.register(node);
+        }
         const providers = fresh.filter(node =>
-            ['dataFormula', 'dataController', 'dataRpc', 'rpcStore', 'remoteSource'].includes(node.nodeTag));
+            ['dataFormula', 'dataController', 'dataRecord', 'dataSelection', 'dataRelationTree', 'dataRpc', 'rpcStore', 'remoteSource'].includes(node.nodeTag));
         for (const node of fresh) {
             if (node.nodeTag !== 'dataSetter' && !providers.includes(node)) {
                 this.installed.add(node);
@@ -110,7 +113,7 @@ export class LogicRuntime {
             this.installed.add(node);
         }
         for (const node of nodes) {
-            if (node.nodeTag === 'dataController') {
+            if (['dataController', 'dataRecord', 'dataSelection', 'dataRelationTree'].includes(node.nodeTag)) {
                 this.compute(node);
                 this.installed.add(node);
             }
@@ -144,7 +147,7 @@ export class LogicRuntime {
         if (named) return named(node, bindings);
         if (isFunctionText(code)) return compileFunctionText(code)(node, bindings);
         return executeScript(node, code, {...bindings, sourceNode: node,
-            wrapSource, genro: node.handler?.application});
+            wrapSource, gramlot: node.handler?.application});
     }
 
     resolve(node) {
@@ -203,11 +206,15 @@ export class LogicRuntime {
             this.executing.add(node);
             try {
                 this._controller(node, attr.func, {...this.builder._bindings(node),
-                    ...extra, sourceNode: node, genro: node.handler?.application,
+                    ...extra, sourceNode: node, gramlot: node.handler?.application,
                     _triggerpars: trigger, _reason: trigger?.trigger_reason ?? null});
             } finally {
                 this.executing.delete(node);
             }
+        } else if (node.nodeTag === 'dataRelationTree') {
+            return node.handler.application.database.invokeModel(node);
+        } else if (['dataRecord', 'dataSelection'].includes(node.nodeTag)) {
+            return node.handler.application.database.invoke(node);
         } else if (['dataRpc', 'rpcStore'].includes(node.nodeTag)) {
             if (typeof (attr.method || attr.rpcmethod) !== 'string' || !(attr.method || attr.rpcmethod)) {
                 throw new Error('dataRpc requires method');
@@ -226,6 +233,7 @@ export class LogicRuntime {
     }
 
     disposeNode(node) {
+        node.handler?.application?.database?.release(node);
         if (['rpcStore', 'bagStore'].includes(node.nodeTag)) node.handler?.application?.stores.unregister(node);
         if (['dataRpc', 'rpcStore', 'remoteSource'].includes(node.nodeTag)) {
             node.handler?.application?.server.cancel(node);

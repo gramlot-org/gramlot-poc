@@ -1,2 +1,5 @@
-"""Compatibility import for the shared example presentation."""
-from gramlot.examples import example_panel
+"""Compatibility import for :mod:`gramlot_fastapi.examples`."""
+
+from gramlot_fastapi.examples import example_panel
+
+__all__ = ["example_panel"]

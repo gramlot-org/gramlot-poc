@@ -4,6 +4,36 @@ import {Bag} from 'genro-bag-js';
 import {UrlResolver, OpenApiResolver} from '../src/resolvers/http.js';
 import {setupDom} from './dom.js';
 import {Application, HtmlBuilder} from '../src/index.js';
+import {ResolverService} from '../src/resolvers/service.js';
+
+test('polling waits for completion, recovers from errors and cancels its timer', async t => {
+ t.mock.timers.enable({apis:['setTimeout']});
+ const pending=[];
+ t.mock.method(globalThis,'fetch',()=>new Promise(resolve=>pending.push(resolve)));
+ const app={data:new Bag(),live:fn=>fn(),_disposed:false};
+ const service=new ResolverService(app),node={absDatapath:path=>path};
+ const options={url:'https://example.test/live',destination:'snapshot',status:'state',pollInterval:2,timeout:0};
+ const first=service.load(node,'url',options);
+ await Promise.resolve();
+ t.mock.timers.tick(10000);
+ assert.equal(pending.length,1,'no overlapping poll while a request is pending');
+ pending.shift()(response({count:1}));await first;
+ t.mock.timers.tick(1999);await Promise.resolve();assert.equal(pending.length,0);
+ t.mock.timers.tick(1);await Promise.resolve();assert.equal(pending.length,1);
+ pending.shift()(new Response('unavailable',{status:503}));
+ for(let i=0;i<15;i++)await Promise.resolve();
+ assert.equal(app.data.getItem('state.state'),'error');
+ assert.equal(app.data.getItem('snapshot.count'),1,'failed polls preserve the last snapshot');
+ t.mock.timers.tick(2000);await Promise.resolve();assert.equal(pending.length,1);
+ service.cancel(node);pending.shift()(response({count:2}));
+ for(let i=0;i<15;i++)await Promise.resolve();
+ t.mock.timers.tick(10000);await Promise.resolve();
+ assert.equal(pending.length,0);assert.equal(app.data.getItem('snapshot.count'),1);
+ const once=service.load(node,'url',{...options,pollInterval:0});await Promise.resolve();
+ pending.shift()(response({count:3}));await once;
+ t.mock.timers.tick(10000);await Promise.resolve();assert.equal(pending.length,0);
+ service.dispose();
+});
 
 const spec = {openapi:'3.0.3',info:{title:'Example',version:'1'},servers:[{url:'/v1'}],
  tags:[{name:'people',description:'Contacts'}],paths:{'/people/{id}':{
@@ -12,6 +42,25 @@ const spec = {openapi:'3.0.3',info:{title:'Example',version:'1'},servers:[{url:'
  post:{operationId:'write',tags:['people'],requestBody:{content:{'application/json':{schema:{$ref:'#/components/schemas/Person'}}}}}}},
  components:{schemas:{'Person.v1':{type:'object'}}}};
 const response = value => new Response(JSON.stringify(value), {headers:{'Content-Type':'application/json'}});
+
+test('explicit POST reload samples fresh passive body bindings after a previous response', async t => {
+ setupDom();
+ const bodies=[];
+ t.mock.method(globalThis,'fetch',async (_url,init)=>{bodies.push(JSON.parse(init.body));return response({error:'missing'});});
+ class Page extends HtmlBuilder {main(root){
+  root.dataSetter({destination:'identity',value:''});root.dataSetter({destination:'password',value:''});
+  root.urlResolver('result','https://example.test/login',{method:'POST',body:{identity:'=identity',password:'=password'},reload:'^submit',_on_start:false});
+  root.button('Submit',{fire:'submit'});
+ }}
+ const host=document.body.appendChild(document.createElement('div'));
+ const app=new Application(host,new Page('main'),{inspector:false});
+ host.querySelector('button').click();await new Promise(resolve=>setTimeout(resolve,220));
+ app.live(()=>{app.data.setItem('main.identity','monitor');app.data.setItem('main.password','example');});
+ host.querySelector('button').click();
+ await new Promise(resolve=>setTimeout(resolve,0));
+ assert.deepEqual(bodies,[{identity:'',password:''},{identity:'monitor',password:'example'}]);
+ app.dispose();host.remove();
+});
 
 test('OpenApiResolver discovers metadata without invoking endpoints; calls are explicit', async t => {
  const calls=[];t.mock.method(globalThis,'fetch',async(url,opts)=>{calls.push([String(url),opts]);return response(spec);});

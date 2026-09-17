@@ -3,8 +3,7 @@ Gramlot documentation
 
 Gramlot lets you describe an interface in Python and render it with its
 JavaScript runtime in the browser. Start with a page recipe, then choose how
-to serve it. The optional FastAPI adapter provides a small working application
-without requiring you to write HTML, JavaScript startup code or a server module.
+to serve it. Server adapters live in integration packages.
 
 This English manual documents the current alpha. It starts the user-facing
 manual and reference; it is not yet an exhaustive widget or JavaScript API
@@ -13,29 +12,26 @@ catalogue.
 Integrations
 ------------
 
-**FastAPI integration** is available now. Serve discovered Python pages with
-``gramlot fastapi serve [directory]``, or add them to an existing FastAPI app.
-See :doc:`guide/fastapi`.
+**FastAPI integration** is maintained in a separate repository. Use
+`gramlot-fastapi <https://github.com/gramlot-org/gramlot-fastapi>`_ to serve
+discovered Python pages or compose them with an existing FastAPI application.
 
-**Django integration** is available in the current development tree. Add Gramlot
-pages to an existing Django project; see :doc:`guide/django`.
+**Django integration** is maintained in a separate repository. Add Gramlot
+pages to an existing Django project with `gramlot-django <https://github.com/gramlot-org/gramlot-django>`_.
 
 .. toctree::
    :maxdepth: 2
    :caption: Learn Gramlot
 
    guide/overview
-   guide/first-page
    guide/components
-   guide/fastapi
-   guide/django
 
 .. toctree::
    :maxdepth: 2
    :caption: Reference
 
    reference/pages
-   reference/fastapi
+   reference/hosting
    reference/labled-box
    reference/formlet
    reference/validation
@@ -44,5 +40,4 @@ pages to an existing Django project; see :doc:`guide/django`.
    reference/local-logic
    reference/select-providers
 
-For a first runnable example, follow :doc:`guide/first-page`. For an existing
-FastAPI project, go directly to :doc:`guide/fastapi`.
+Choose an integration package for a runnable host.

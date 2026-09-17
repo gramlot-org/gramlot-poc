@@ -1,3 +1,4 @@
+import {validationMessageStyle} from '../components/validation-style.js';
 // Copyright 2025 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 /**
  * inputs — text-like input widgets as web components (JS port of ws-web
@@ -206,7 +207,7 @@ function defineComponents() {
             const style = document.createElement('style');
             style.textContent = `
                 .labledBox_content{position:relative}input{padding-right:25px}
-                .choice-toggle{position:absolute;right:1px;top:1px;width:23px;height:23px;
+                .choice-toggle{display:var(--field-tools-display,block);position:absolute;right:1px;top:1px;width:23px;height:23px;
                     border:0;border-left:1px solid var(--field-border,#c8c8c8);border-radius:0 2px 2px 0;
                     background:var(--choice-button-bg,#f1f2f4);color:var(--choice-arrow,#626770);cursor:pointer}
                 .choice-toggle:after{content:'';display:block;width:5px;height:5px;
@@ -245,7 +246,7 @@ function defineComponents() {
             this._error = document.createElement('span');
             this._error.id = 'choice-error';
             this._error.setAttribute('role', 'status');
-            this._error.style.cssText = 'display:block;color:var(--color-error,#a02020);font-size:12px';
+            this._error.style.cssText = 'display:block;' + validationMessageStyle;
             this._input.setAttribute('aria-describedby', 'choice-error');
             content.append(this._toggle, this._choices, this._error);
         }
@@ -470,7 +471,7 @@ function defineComponents() {
 
     class GnrCheckbox extends GnrInput {
         static get observedAttributes() {
-            return ['checked', 'value', 'lbl', 'disabled', 'readonly', 'label'];
+            return [...super.observedAttributes, 'checked', 'label'];
         }
 
         get inputType() { return 'checkbox'; }

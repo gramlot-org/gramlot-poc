@@ -4,7 +4,12 @@ import {UrlResolver, OpenApiResolver, jsonBag} from './http.js';
 /** Source-owned asynchronous Data loads; only the latest request can publish. */
 export class ResolverService {
     constructor(app) { this.app = app; this.requests = new Map(); }
-    cancel(node) { this.requests.get(node)?.controller.abort(); this.requests.delete(node); }
+    cancel(node) {
+        const request = this.requests.get(node);
+        clearTimeout(request?.timer);
+        request?.controller.abort();
+        this.requests.delete(node);
+    }
     dispose() { for (const node of this.requests.keys()) this.cancel(node); }
     async load(node, kind, options) {
         this.cancel(node);
@@ -39,6 +44,13 @@ export class ResolverService {
                 status('error', error.message);
                 if (options._onError) this.app._recipeRuntime.evaluate(node, options._onError, {error});
             });
+        } finally {
+            // Wait AFTER completion: slow requests never overlap or starve each other.
+            // The same Source owner cancels both the request and its next poll.
+            const seconds = Number(options.pollInterval);
+            if (current() && Number.isFinite(seconds) && seconds > 0) {
+                request.timer = setTimeout(() => this.load(node, kind, options), seconds * 1000);
+            }
         }
     }
 }
@@ -60,5 +72,5 @@ export function resolverDeclaration(kind, destination, url, options = {}) {
     const {_on_start = true, ...parameters} = options;
     const props = {destination, url, ...parameters};
     const encoded = Object.entries(props).map(([key,value]) => `${JSON.stringify(key)}:${encode(value, !['destination','status','_onResult','_onError'].includes(key))}`).join(',');
-    return {func:`genro.resolvers.load(this, ${JSON.stringify(kind)}, {${encoded}});`, _on_start, ...bindings};
+    return {func:`gramlot.resolvers.load(this, ${JSON.stringify(kind)}, {${encoded}});`, _on_start, ...bindings};
 }

@@ -4,6 +4,7 @@ from genro_builders.builder import SourceBag, SourceBagNode
 from genro_bag import Bag
 from genro_builders.contrib.html.html_builder import HtmlBuilder
 
+from .grammar.frame_channel import FrameChannelDeclarations
 from .grammar.resources import ResourceDeclarations, ResourceAuthoring
 from .grammar.grid import GridAuthoring
 from .grammar.chart import ChartAuthoring
@@ -22,6 +23,7 @@ from .grammar import (
 
 
 class GramlotBuilder(
+    FrameChannelDeclarations,
     ResourceDeclarations,
     FormDeclarations,
     DecorationDeclarations,

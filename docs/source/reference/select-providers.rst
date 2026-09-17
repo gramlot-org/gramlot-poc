@@ -77,7 +77,7 @@ Multiple dataset selection
 dbSelect
 --------
 
-Select a record identity through an explicit database lookup endpoint.
+Select a database identity through a configured minimum service or an explicit endpoint.
 
 Collection: ``inputs``. Tag: ``gnr-dbselect``.
 
@@ -88,9 +88,21 @@ Child tags: none.
 Parameters
 ~~~~~~~~~~
 
-* ``rpcmethod`` — @endpoint method | logical method name; required; default: ``null``.
+* ``dbtable`` — string; optional; default: ``null``.
 
-  Explicitly exposed data endpoint. Python accepts the decorated bound method or its logical name.
+  Configured logical table for the standard service. Requires a page with DbPageMixin and a configured DbHandler service.
+
+* ``ignoreCase`` — boolean | Data binding; optional; default: ``true``.
+
+  Standard service matching policy. SQLite uses Unicode casefold when true and exact case when false.
+
+* ``limit`` — integer | Data binding; optional; default: ``10``.
+
+  Standard service result limit, from 1 to 100. Prefix matching runs first; containment is tried only when no prefix matches.
+
+* ``rpcmethod`` — @endpoint method | logical method name; optional; default: ``null``.
+
+  Explicit endpoint for existing providers. When omitted, Python authoring requires dbtable and uses dbhandler.dbselect.
 
 * ``value`` — identity | Data binding; optional; default: ``null``.
 
@@ -175,12 +187,14 @@ Behavior and limits
 
 * The example requires the optional FastAPI–GenroPy host and test_invoice_pg model. The component itself is database-agnostic; the endpoint owns database access and authorization.
 
+* The new Python dbtable path is an experimental minimum service. Its SQLite adapter is read-only and searches the configured caption column. Advanced options such as auxColumns are rejected; Genropy-specific capabilities remain separate. Existing explicit-rpcmethod providers retain their own contracts.
+
 Minimal dbSelect
 ~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from gramlot.contrib.fastapi_genropy import GenropyPage
+   from gramlot_fastapi.genropy import GenropyPage
    from gramlot.page import endpoint
 
 

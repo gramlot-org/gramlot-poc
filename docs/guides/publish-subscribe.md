@@ -1,6 +1,6 @@
 # Publish and subscribe
 
-`genro` coordinates messages within one mounted Gramlot application. The same
+`gramlot` coordinates messages within one mounted Gramlot application. The same
 service handles JavaScript subscribers, declarative Source subscriptions, button
 `publish` actions and widget `gnr-topic` notifications. Separate applications do
 not receive each other's topics, even when mounted in the same document.
@@ -8,10 +8,10 @@ not receive each other's topics, even when mounted in the same document.
 ## Application API
 
 ```javascript
-const unsubscribe = genro.subscribe('report_ready', payload => {
+const unsubscribe = gramlot.subscribe('report_ready', payload => {
     console.log(payload.reportId);
 });
-genro.publish('report_ready', {reportId: 42});
+gramlot.publish('report_ready', {reportId: 42});
 unsubscribe(); // Safe to call more than once.
 ```
 
@@ -25,7 +25,7 @@ callback before its turn prevents its delivery during the current publication.
 The optional third argument accepts `signal` (an AbortSignal) and `sourceNode`:
 
 ```javascript
-genro.subscribe('report_ready', function (payload) {
+gramlot.subscribe('report_ready', function (payload) {
     this.SET('.report', payload);
 }, {sourceNode: this});
 ```
@@ -42,13 +42,13 @@ subscriptions once, not each time a reactive controller executes.
 Inside a Source-scoped action or controller, `this.publish('ready', payload)`
 qualifies the message with the node identity. `this.subscribe('ready', callback)`
 listens to that same qualified topic and automatically owns the subscription.
-Both methods use the same `genro` coordinator:
+Both methods use the same `gramlot` coordinator:
 
 ```javascript
 // On a Source node with nodeId='report':
 this.publish('ready', {reportId: 42});
 // Equivalent application-level publication:
-genro.publish('report_ready', {reportId: 42});
+gramlot.publish('report_ready', {reportId: 42});
 ```
 
 The prefix is `nodeId`, then the builder's `node_id`, then the runtime's stable
@@ -69,7 +69,7 @@ pane.dataController("""
 """, subscribe_pages_showing=True)
 
 pane.button('Show history',
-            action="genro.publish('pages_switchPage', 'history');")
+            action="gramlot.publish('pages_switchPage', 'history');")
 ```
 
 JavaScript authoring uses the existing controller `func` attribute:
@@ -87,7 +87,7 @@ at delivery time, and existing function/named-function controller forms retain
 their normal `(sourceNode, bindings)` signature. Plain object payload fields are
 available as named parameters, overriding matching declared parameters. The full
 payload remains available as `payload` and `_kwargs`. Reserved runtime context
-(`genro`, `sourceNode`, `_topic`, `_reason`, `_triggerpars`) is supplied by the
+(`gramlot`, `sourceNode`, `_topic`, `_reason`, `_triggerpars`) is supplied by the
 runtime. `_topic` is the published topic; `_reason` is `topic` and
 `_triggerpars` contains `{trigger_reason: 'topic', topic, kw: payload}`.
 
@@ -131,3 +131,11 @@ selection write-back, external controls and suppression of repeated showing
 notifications for an already selected page. The current stack bridge remains an
 alpha integration in TopicService; a shared component command protocol is future
 work, alongside the container-role review.
+
+## Migrating saved Source
+
+The page object was renamed from `genro` to `gramlot` in 0.2 development. Update
+authored scripts such as `genro.publish(...)` to `gramlot.publish(...)`, and
+function callbacks from `args.genro` to `args.gramlot`. There is no compatibility
+alias or fallback. Regenerate serialized Source, downloadable examples and other
+stored controller strings from their authoritative Python or JavaScript source.

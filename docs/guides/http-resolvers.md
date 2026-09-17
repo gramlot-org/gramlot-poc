@@ -26,6 +26,18 @@ Use `_on_start=false` to suppress the initial load. An additional bound option,
 such as `reload='^reloadCounter'`, can explicitly trigger a fresh request.
 Each declarative execution creates a new resolver, so it always fetches anew.
 
+`pollInterval=2` repeats the request two seconds after completion, including
+after errors. Slow requests never overlap. Zero (the default) disables polling.
+The interval may be bound to Data; changing it triggers one immediate load with
+the new policy. Removing the Source node or disposing the page cancels both the
+pending request and the next poll. For example:
+
+```python
+root.data('refreshSeconds', 2)
+root.urlResolver('snapshot', url='/api/snapshot', pollInterval='^refreshSeconds',
+                 status='requestState', reload='^refresh')
+```
+
 Status is a Bag with `state` (`loading`, `ready`, or `error`) and `error`.
 On failure, the previous result remains intact. A newer request cancels the old
 one and prevents stale responses from publishing. Removing the Source controller

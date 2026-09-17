@@ -1,5 +1,5 @@
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
-// Edit supported text regions without replacing the surrounding page structure.
+import {loadJodit, joditCss} from './jodit-dependencies.js';
 export function richBody(html){return new DOMParser().parseFromString(html,'text/html');}
 export function richRegions(doc){
  const inline=new Set(['STRONG','EM','B','I','U','S','DEL','CODE','A','BR']);
@@ -13,120 +13,111 @@ export function richRegions(doc){
 export function serializeRichDocument(doc,full){
  return full?(doc.doctype?new XMLSerializer().serializeToString(doc.doctype)+'\n':'')+doc.documentElement.outerHTML:doc.body.innerHTML;
 }
+
+// Keep executable/embedded content inert and recover it from the original tree.
+export function prepareRichContent(value) {
+ let original=richBody(value);
+ const full=/<html[\s>]|<!doctype/i.test(value)||original.head.children.length>0;
+ if(!full)original=richBody('<!doctype html><html><head></head><body>'+value+'</body></html>');
+ const display=original.body.cloneNode(true);
+ const protectedNodes=new Map(), attributes=new Map();
+ const marker='data-gramlot-'+Math.random().toString(36).slice(2);
+ let sequence=0;
+ const comments=[];const walker=original.createTreeWalker(display,128);
+ while(walker.nextNode())comments.push(walker.currentNode);
+ for(const node of [...display.querySelectorAll('script,style,iframe,object,embed,template,svg,math,link,meta,base'),...comments]){
+  if(!display.contains(node))continue;
+  const id=String(++sequence), placeholder=document.createElement('span');
+  placeholder.setAttribute(marker,id);placeholder.contentEditable='false';
+  placeholder.textContent='['+(node.tagName?.toLowerCase()||'comment')+' — edit in Code]';
+  protectedNodes.set(id,node.cloneNode(true));node.replaceWith(placeholder);
+ }
+ for(const element of display.querySelectorAll('*')){
+  const removed=[];
+  for(const attr of [...element.attributes]){
+   if(/^on/i.test(attr.name)||['autofocus','srcdoc'].includes(attr.name)||
+      /^(?:javascript|vbscript|data):/i.test(attr.value.trim())&&['href','src','action','formaction','xlink:href'].includes(attr.name)&&
+      !(element.tagName==='IMG'&&attr.name==='src'&&/^data:image\/(?:png|jpeg|gif|webp);base64,/i.test(attr.value))){
+    removed.push([attr.name,attr.value]);element.removeAttribute(attr.name);
+   }
+  }
+  if(removed.length){const id=String(++sequence);element.setAttribute(marker+'-attrs',id);attributes.set(id,removed);}
+ }
+ return {html:display.innerHTML, styles:[...original.head.querySelectorAll('style')].map(n=>n.textContent).join('\n'),
+  serialize(html){
+   const edited=richBody(html);
+   for(const [id,node] of protectedNodes){
+    const matches=edited.body.querySelectorAll('['+marker+'="'+id+'"]');
+    if(matches.length!==1)throw new Error('Protected page content changed. Revert or use Code.');
+    matches[0].replaceWith(node.cloneNode(true));
+   }
+   for(const element of edited.body.querySelectorAll('['+marker+'-attrs]')){
+    for(const [name,value] of attributes.get(element.getAttribute(marker+'-attrs'))||[])element.setAttribute(name,value);
+    element.removeAttribute(marker+'-attrs');
+   }
+   original.body.innerHTML=edited.body.innerHTML;
+   return serializeRichDocument(original,full);
+  }
+ };
+}
+
 export function defineHtmlEditor(){
+ // Retain the existing runtime tag so consumers do not need to migrate.
  if(customElements.get('gnr-proseeditor'))return;
  customElements.define('gnr-proseeditor',class extends HTMLElement{
-  constructor(){super();this.attachShadow({mode:'open'});this._value='';}
-  set value(v){if(v===this._value)return;this._value=v||'';if(this.isConnected)this.load();}
+  constructor(){super();this.attachShadow({mode:'open'});this._value='';this._readonly=true;}
+  set value(value){value=String(value??'');if(value===this._value)return;this._value=value;if(this.isConnected)this.load();}
   get value(){return this._value;}
-  set readonly(v){this._readonly=v;this.view?.setProps({editable:()=>!this._readonly});this.refreshTools?.();}
-  connectedCallback(){if(this._value)this.load();}
-  disconnectedCallback(){this.generation=(this.generation||0)+1;this.view?.destroy();this.view=null;}
+  set readonly(value){this._readonly=!!value;this.editor?.setReadOnly(this._readonly);}
+  connectedCallback(){this.load();}
+  disconnectedCallback(){this.generation=(this.generation||0)+1;this.editor?.destruct();this.editor=null;}
   async load(){
    const generation=this.generation=(this.generation||0)+1;
-   this.view?.destroy();this.view=null;
-   this.shadowRoot.innerHTML='<style>:host{display:flex;flex-direction:column;height:100%;overflow:hidden;background:white;color:#303944}.tools{padding:6px;border-bottom:1px solid #ddd;display:flex;gap:5px}button{background:none;border:1px solid #ddd;border-radius:3px;color:inherit}button:disabled{opacity:.4}button[aria-pressed="true"]{background:#dce8f6;border-color:#91accb}.ProseMirror{padding:16px;outline:none;min-height:160px;white-space:pre-wrap}.ProseMirror p{margin:0 0 10px}</style><div class="body">Loading rich text…</div>';
-   const body=this.shadowRoot.querySelector('.body');
+   this.editor?.destruct();this.editor=null;
+   this.shadowRoot.innerHTML='<style>:host{display:block;height:100%;min-height:0;background:white}.status{font:12px system-ui;padding:6px;color:#596579}.status:empty{display:none}</style><div class="status" role="status">Loading HTML editor…</div><textarea aria-label="HTML content"></textarea>';
+   const status=this.shadowRoot.querySelector('.status');
    try{
-    const documentHtml=richBody(this._value),regions=richRegions(documentHtml);
-    if(!regions.length)throw new Error('No editable text blocks in this document. Preview and Code remain available.');
-    const deps='?deps=prosemirror-model@1.22.3,prosemirror-state@1.4.3,prosemirror-view@1.33.8';
-    const [model,state,view,basic,commands,keymap,history]=await Promise.all([
-     import('https://esm.sh/prosemirror-model@1.22.3'),
-     import('https://esm.sh/prosemirror-state@1.4.3'+deps),
-     import('https://esm.sh/prosemirror-view@1.33.8'+deps),
-     import('https://esm.sh/prosemirror-schema-basic@1.2.3'+deps),
-     import('https://esm.sh/prosemirror-commands@1.6.2'+deps),
-     import('https://esm.sh/prosemirror-keymap@1.2.2'+deps),
-     import('https://esm.sh/prosemirror-history@1.4.1'+deps)]);
-    if(generation!==this.generation)return;
-    const schema=new model.Schema({nodes:{doc:{content:'inline*'},text:{group:'inline'},hard_break:basic.schema.spec.nodes.get('hard_break')},marks:basic.schema.spec.marks.append({underline:{parseDOM:[{tag:'u'}],toDOM:()=>['u',0]},strike:{parseDOM:[{tag:'s'},{tag:'del'}],toDOM:()=>['s',0]}})});
-    const full=/<html[\s>]|<!doctype/i.test(this._value)||documentHtml.head.children.length>0;
-    body.textContent='';body.style.cssText='flex:1;min-height:0';
-    const toolbar=document.createElement('div');toolbar.className='tools';toolbar.setAttribute('role','toolbar');toolbar.setAttribute('aria-label','Text formatting');toolbar.style.flexWrap='wrap';body.before(toolbar);
-    const status=document.createElement('span');status.style.cssText='font:12px system-ui;color:#68717e;padding:5px';toolbar.append(status);
-    const controls=[];this.refreshTools=()=>{status.textContent=this._readonly?'Locked — unlock the pencil to edit':this.view?'Editing text — select words to format':'Click a paragraph to edit';for(const {button,command,mark} of controls){button.disabled=this._readonly||!this.view||!command(this.view.state);if(mark&&this.view){const {from,to,empty}=this.view.state.selection;button.setAttribute('aria-pressed',String(empty?mark.isInSet(this.view.state.storedMarks||this.view.state.selection.$from.marks())!=null:this.view.state.doc.rangeHasMark(from,to,mark)));}}};
-    const frame=document.createElement('iframe');frame.title='Rich text document';
-    // WebKit needs scripting enabled for parent-installed editing handlers.
-    // The sanitized srcdoc below enforces script-src 'none' through CSP.
-    frame.setAttribute('sandbox','allow-same-origin allow-scripts');frame.style.cssText='width:100%;height:100%;border:0;background:white';
-    // The editable presentation is isolated from the host and never runs page
-    // scripts. The original parsed document remains the serialization source.
-    const display=documentHtml.cloneNode(true);
-    richRegions(display).forEach((el,index)=>el.setAttribute('data-gramlot-region',String(index)));
-    display.querySelectorAll('script,iframe,object,embed,base,meta[http-equiv]').forEach(el=>el.remove());
-    display.querySelectorAll('*').forEach(el=>{for(const attr of [...el.attributes])if(/^on/i.test(attr.name)||attr.name==='autofocus')el.removeAttribute(attr.name);});
-    const policy=display.createElement('meta');policy.httpEquiv='Content-Security-Policy';
-    policy.content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; form-action 'none'";display.head.prepend(policy);
-    const style=display.createElement('style');style.textContent='[data-gramlot-region]:hover{outline:1px dashed #b8c4d0;outline-offset:3px}.ProseMirror{outline:1px solid #859db8;outline-offset:3px;white-space:pre-wrap}.ProseMirror:focus{outline-color:#467bb8}';display.head.append(style);
-    const ready=new Promise(resolve=>frame.addEventListener('load',resolve,{once:true}));
-    frame.srcdoc='<!doctype html>'+display.documentElement.outerHTML;body.append(frame);
-    await ready;if(generation!==this.generation)return;
-    const frameDoc=frame.contentDocument;
-    let active=null,originalClass='';
-    const activate=(element,event)=>{
-     if(this._readonly)return;
-     if(active===element){frame.contentWindow.focus();return;}
-     // Prevent the original pointer default from focusing the old, replaced
-     // text node after ProseMirror has mounted (notably in desktop WebKit).
-     if(event.type==='mousedown')event.preventDefault();
-     this.view?.destroy();
-     if(active){active.className=originalClass;active.removeAttribute('contenteditable');active.innerHTML=regions[Number(active.getAttribute('data-gramlot-region'))].innerHTML;}
-     active=element;originalClass=element.className;
-     const region=regions[Number(element.getAttribute('data-gramlot-region'))];
-     const initial=model.DOMParser.fromSchema(schema).parse(region);
-     element.textContent='';
-     this.view=new view.EditorView({mount:element},{state:state.EditorState.create({schema,doc:initial,plugins:[history.history(),keymap.keymap({'Mod-z':history.undo,'Mod-y':history.redo,'Mod-b':commands.toggleMark(schema.marks.strong),'Mod-i':commands.toggleMark(schema.marks.em),'Enter':(s,dispatch)=>{if(dispatch)dispatch(s.tr.replaceSelectionWith(schema.nodes.hard_break.create()));return true;}})]}),editable:()=>!this._readonly,
-      dispatchTransaction:transaction=>{
-       this.view.updateState(this.view.state.apply(transaction));
-       this.refreshTools();
-       if(!transaction.docChanged)return;
-       const container=document.createElement('div');container.append(model.DOMSerializer.fromSchema(schema).serializeFragment(this.view.state.doc.content));
-       region.innerHTML=container.innerHTML;
-       this._value=serializeRichDocument(documentHtml,full);
-       this.dispatchEvent(new Event('change',{bubbles:true,composed:true}));
-      }});
-     const position=this.view.posAtCoords({left:event.clientX,top:event.clientY});
-     if(position)this.view.dispatch(this.view.state.tr.setSelection(state.TextSelection.create(this.view.state.doc,position.pos)));
-     frame.contentWindow.focus();this.view.focus();this.refreshTools();
-    };
-    const boundDocuments=new WeakSet();
-    const bindDocument=()=>{
-     const current=frame.contentDocument;
-     if(!current||boundDocuments.has(current))return;
-     boundDocuments.add(current);
-     const activateEvent=event=>{
-      const target=event.target.nodeType===1?event.target:event.target.parentElement;
-      const element=target?.closest('[data-gramlot-region]');
-      if(!element)return;
-      try{activate(element,event);}catch(error){status.textContent='Cannot activate editing: '+error.message;console.error(error);}
-     };
-     current.addEventListener('submit',event=>event.preventDefault(),true);
-     current.addEventListener('mousedown',activateEvent,true);
-     current.addEventListener('click',event=>{
-      if(event.target.closest?.('a,button,input'))event.preventDefault();
-      activateEvent(event);
-     },true);
-    };
-    // Browsers may replace the initial about:blank document after a hidden
-    // stack pane becomes visible. Bind every loaded document, not only the first.
-    frame.addEventListener('load',bindDocument);bindDocument();
-    const clear=(s,dispatch)=>{if(s.selection.empty)return false;if(dispatch)dispatch(s.tr.removeMark(s.selection.from,s.selection.to));return true;};
-    for(const [label,command,mark] of [
-     ['Bold',commands.toggleMark(schema.marks.strong),schema.marks.strong],
-     ['Italic',commands.toggleMark(schema.marks.em),schema.marks.em],
-     ['Underline',commands.toggleMark(schema.marks.underline),schema.marks.underline],
-     ['Strikethrough',commands.toggleMark(schema.marks.strike),schema.marks.strike],
-     ['Code',commands.toggleMark(schema.marks.code),schema.marks.code],
-     ['Clear formatting',clear],['Undo',history.undo],['Redo',history.redo]]){
-     const button=document.createElement('button');button.textContent=label;button.title=label;
-     button.onmousedown=e=>e.preventDefault();
-     button.onclick=()=>{if(!this._readonly&&this.view){command(this.view.state,this.view.dispatch,this.view);this.view.focus();this.refreshTools();}};
-     toolbar.append(button);controls.push({button,command,mark});
+    const Jodit=await loadJodit(this.shadowRoot,joditCss);
+    if(generation!==this.generation||!this.isConnected)return;
+    // Jodit mounts popups/dialogs in the owner document, outside the shadow tree.
+    if(!document.getElementById('gramlot-jodit-popup-style')){
+     const popupStyle=document.createElement('style');popupStyle.id='gramlot-jodit-popup-style';
+     popupStyle.textContent=joditCss;document.head.append(popupStyle);
     }
-    this.refreshTools();
-
-   }catch(error){if(generation===this.generation)body.textContent=error.message;}
+    const content=prepareRichContent(this._value);
+    const editor=this.editor=Jodit.make(this.shadowRoot.querySelector('textarea'),{
+     // Content is in Jodit's iframe. Passing the toolbar's ShadowRoot makes
+     // Jodit use the wrong selection and elementFromPoint for table cells.
+     globalFullSize:false,height:'100%',minHeight:250,
+     readonly:this._readonly,iframe:true,iframeSandbox:'allow-same-origin allow-scripts',
+     iframeStyle:'body{font-family:system-ui;padding:16px;}',
+     toolbarAdaptive:false,toolbarSticky:false,showXPathInStatusbar:false,
+     sourceEditor:'area',disablePlugins:['mobile'],
+     buttons:['undo','redo','|','paragraph','font','fontsize','|','bold','italic','underline','strikethrough','brush','eraser','|','ul','ol','outdent','indent','align','|','link','image','table','hr','|','find','selectall','fullsize'],
+     uploader:{insertImageAsBase64URI:true},
+    });
+    const frameDoc=editor.editor.ownerDocument;
+    const policy=frameDoc.createElement('meta');policy.httpEquiv='Content-Security-Policy';
+    policy.content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src data:; form-action 'none'";
+    frameDoc.head.prepend(policy);
+    const pageStyle=frameDoc.createElement('style');pageStyle.textContent=content.styles;frameDoc.head.append(pageStyle);
+    frameDoc.addEventListener('submit',e=>e.preventDefault(),true);
+    frameDoc.addEventListener('click',e=>{if(e.target.closest?.('a'))e.preventDefault();},true);
+    editor.value=content.html;
+    let previous=editor.value,restoring=false;
+    status.textContent='';
+    editor.events.on('change',()=>{
+     if(restoring||this._readonly||generation!==this.generation)return;
+     const html=editor.value;if(html===previous)return;
+     try{
+      const value=content.serialize(html);previous=html;this._value=value;status.textContent='';
+      this.dispatchEvent(new Event('change',{bubbles:true,composed:true}));
+     }catch(error){
+      restoring=true;try{editor.value=previous;}finally{restoring=false;}
+      status.textContent=error.message;
+     }
+    });
+   }catch(error){if(generation===this.generation)status.textContent='HTML editor unavailable: '+error.message+'. Use Code.';}
   }
  });
 }

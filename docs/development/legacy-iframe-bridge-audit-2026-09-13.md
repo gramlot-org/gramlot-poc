@@ -1,6 +1,24 @@
 # Legacy iframe communication and the minimum Gramlot bridge
 
-Status: source audit and proposed contract, not an implemented bridge.
+Status: source audit plus a locally implemented minimum lifecycle bridge.
+
+## Minimum lifecycle bridge implemented — 2026-09-14
+
+The legacy integration now owns `gramlot_genro_mixin.js` and applies it to the
+Gramlot Application during browser startup. It exposes that Application as
+`window.gramlot`, retains `window.genro` exclusively for legacy Genropy, records
+the parent frame and page identities, installs the constrained opening-argument
+receiver, and signals `pageStarted` only after Gramlot content is ready.
+
+The legacy frame manager recognizes this explicit capability before its existing
+`window.genro` fallback. Initial and repeated `changedStartArgs` payloads publish
+through Gramlot topics, selection requests a Gramlot render, and close checks use
+the mixin's clean synchronous result. The existing legacy and generic
+`nonGenroContent` branches remain intact.
+
+This implementation deliberately stops at the owner-authorized minimum. It does
+not share Bags, emulate legacy widgets or forms, add RPC or authentication,
+implement dirty tracking, or add general parent/child routing.
 
 ## Scope and runtime identity
 

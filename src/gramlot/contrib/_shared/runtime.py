@@ -1,11 +1,12 @@
-"""Browser runtime wiring for the installed Gramlot wheel.
+"""Browser runtime descriptors shared by server integration packages.
 
 These paths describe the current wheel layout. An application author does not
-configure them. This optional adapter owns this wheel-specific knowledge.
+configure them. Gramlot core owns this wheel-specific knowledge.
 """
 
 import json
 import re
+from dataclasses import dataclass
 from uuid import uuid4
 from html import escape
 from pathlib import Path, PurePosixPath
@@ -43,17 +44,34 @@ IMPORT_PATHS = {
 }
 
 
+@dataclass(frozen=True, slots=True)
+class RuntimeAssetMount:
+    """One directory a host exposes under the runtime URL namespace."""
+
+    name: str
+    url_prefix: str
+    directory: Path
+    immutable: bool
+
+
 class RuntimeAssets:
     """Translate shared disk paths into URLs under one application's prefix."""
 
-    def __init__(self, prefix: str):
+    def __init__(self, prefix: str, *, browser_directory: str | Path | None = None,
+                 development: bool = False):
         self.prefix = prefix
+        self.development = development
         self.base_url = f'{prefix}/{RUNTIME_SEGMENT}/'
         self.entry_url = self.base_url + 'common/entry.js'
-        self.frontend_directory = Path(__file__).parent / 'frontend'
+        self.frontend_directory = (Path(__file__).parent / 'frontend').resolve()
         self.package_directory = Path(gramlot.__file__).resolve().parent / 'resources'
-        self.browser_directory = self.package_directory / 'browser'
+        self.browser_directory = (Path(browser_directory).resolve() if browser_directory is not None
+                                  else self.package_directory / 'browser')
         self.browser_manifest = self._load_browser_manifest()
+        if self.browser_manifest is None and not development:
+            raise ValueError(
+                'Gramlot browser manifest not found; use development=True for source assets'
+            )
         if self.browser_manifest is not None:
             self.base_url += self.browser_manifest['buildId'] + '/'
             self.entry_url = self.base_url + self.browser_manifest['entryPoints']['gramlot-page-startup']
@@ -90,6 +108,32 @@ class RuntimeAssets:
                     for name, path in self.browser_manifest['entryPoints'].items()
                     if name != 'gramlot-page-startup'}
         return {name: self.base_url + path for name, path in IMPORT_PATHS.items()}
+
+    def asset_mounts(self) -> tuple[RuntimeAssetMount, ...]:
+        """Describe the runtime directories and their cache policy for a host."""
+        if self.browser_manifest is not None:
+            return (RuntimeAssetMount(
+                name='browser',
+                url_prefix=self.base_url,
+                directory=self.browser_directory,
+                immutable=True,
+            ),)
+        mounts = [
+            RuntimeAssetMount(
+                name=name,
+                url_prefix=f'{self.base_url}{name}/',
+                directory=(self.package_directory / relative).resolve(),
+                immutable=False,
+            )
+            for name, relative in PACKAGE_ASSET_DIRECTORIES.items()
+        ]
+        mounts.append(RuntimeAssetMount(
+            name='common',
+            url_prefix=f'{self.base_url}common/',
+            directory=self.frontend_directory.resolve(),
+            immutable=False,
+        ))
+        return tuple(mounts)
 
     def document_template(self) -> str:
         return (self.frontend_directory / 'index.html').read_text()

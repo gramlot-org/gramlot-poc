@@ -6,8 +6,12 @@ modified. Authoring wrappers never enter the wire payload.
 """
 from genro_bag import Bag
 from genro_builders.builder import SourceBag
-from genro_tytx import register_class, to_tytx as encode
+from genro_tytx import from_tytx as decode, register_class, to_tytx as encode
 from gramlot.resolvers import RpcResolver
+
+
+TYTX_FORMAT = 'json'
+TYTX_MEDIA_TYPE = 'application/vnd.tytx+json'
 
 
 @register_class
@@ -37,6 +41,11 @@ def snapshot(value):
     return value
 
 
-def to_tytx(value, transport='json', **kwargs):
+def from_tytx(value, transport=TYTX_FORMAT, **kwargs):
+    """Decode Gramlot's selected TYTX transport and registered value types."""
+    return decode(value, transport=transport, **kwargs)
+
+
+def to_tytx(value, transport=TYTX_FORMAT, **kwargs):
     """Encode a detached typed snapshot, preserving ordinary Data Bags."""
     return encode(snapshot(value), transport=transport, **kwargs)

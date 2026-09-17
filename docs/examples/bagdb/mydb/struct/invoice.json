@@ -1,0 +1,207 @@
+{
+  "table": "invoice",
+  "sourceTable": "invc.invoice",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "customer_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Customer",
+      "sourceReference": "customer.id",
+      "references": "customer.id"
+    },
+    "date": {
+      "dtype": "T",
+      "sourceDtype": "D",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Date"
+    },
+    "gross_total": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Gross total"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "inv_number": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Invoice number"
+    },
+    "invoice_time": {
+      "dtype": "T",
+      "sourceDtype": "H",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Invoice Time"
+    },
+    "total": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Total"
+    },
+    "vat_total": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "VAT total"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "row_count",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "customer_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "customer_state",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "anno",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "periodo",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "value_category",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "display_total",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "all_notes",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "priority_note",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "invoice_status",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "status_label",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "days_since_invoice",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "number_series",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "week_start",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "priced_rows_pct",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "invoice_datetime",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "invoice_month",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "smart_row_count",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "has_expensive_rows",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "duplicate_products",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "due_date",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "created_same_day",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "is_recent",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "rows_json",
+      "kind": "subQueryColumn"
+    },
+    {
+      "name": "notes_xml",
+      "kind": "subQueryColumn"
+    },
+    {
+      "name": "max_row_price",
+      "kind": "subQueryColumn"
+    },
+    {
+      "name": "first_product_id",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "discount_tier_id",
+      "kind": "joinColumn"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "table": "customer",
+  "sourceTable": "invc.customer",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__is_draft": {
+      "dtype": "B",
+      "sourceDtype": "B",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__is_draft"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "account_name": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Account name"
+    },
+    "customer_type_code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Customer type code",
+      "sourceReference": "customer_type.code",
+      "references": "customer_type.code"
+    },
+    "email": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Email"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "notes": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Notes"
+    },
+    "payment_type_code": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Payment type code",
+      "sourceReference": "payment_type.code",
+      "references": "payment_type.code"
+    },
+    "phone": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Phone"
+    },
+    "postcode": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Postcode"
+    },
+    "state": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "State",
+      "sourceReference": "invc.state.code",
+      "references": "state.code"
+    },
+    "street_address": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Street Address"
+    },
+    "suburb": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Suburb"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "n_invoices",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "invoiced_total",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "full_address",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "has_invoices",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "customer_rank",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "display_name",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "postcode_padded",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "state_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "payment_description",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "region_name",
+      "kind": "aliasColumn"
+    },
+    {
+      "name": "account_code",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "is_active_valuable",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "contact_info",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "customer_score",
+      "kind": "pyColumn"
+    },
+    {
+      "name": "invoice_numbers",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "avg_invoice_value",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "has_activity",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "is_confirmed",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "last_invoice_id",
+      "kind": "formulaColumn"
+    }
+  ]
+}

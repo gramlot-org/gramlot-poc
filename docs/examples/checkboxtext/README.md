@@ -6,7 +6,7 @@ shared Gramlot input runtime. This version does not change chartBox rendering.
 Run the example:
 
 ```sh
-gramlot fastapi serve docs/examples/checkboxtext --port 8087
+gramlot-fastapi serve docs/examples/checkboxtext --port 8087
 ```
 
 Open `/page/index/`. The page contains a popup and inline control sharing a

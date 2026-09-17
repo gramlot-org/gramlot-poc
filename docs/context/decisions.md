@@ -1,4 +1,114 @@
+## BagDB ownership and local DB trials — 2026-09-17
+
+Owner: run database experiments in gramlot-poc; move BagDB out of Bag JS into
+Gramlot common code. Local library, read adapter, dataRecord/dataSelection,
+dbSelect and grid integration are implemented with tests and a Python laboratory.
+See [GP-020](../development/020-bagdb-laboratory.md). This supersedes older statements
+that the fake and both declarations are wholly absent. Typed widget identities,
+field/fieldcell, recursive model trees and remote providers remain open. Product
+acceptance is separate; no release or architecture amendment is implied.
+
+## Site decision documents — owner clarification, 2026-09-15
+
+Site decision documents and architectural guides must be written in English.
+The component/controller/recipe management draft has been translated and renamed
+accordingly. This corrects the initial Italian draft, not the original-language
+historical transcripts.
+
+## Database proxy architecture — owner decision and PoC, 2026-09-15
+
+Owner clarification: dotted endpoint names may traverse a chain of proxies
+(`aaa.bbb.ccc`), not only one namespace. Implemented through recursive explicit
+registration, with type checking at every hop and cycle rejection at discovery.
+The base class remains DbHandler; dbhandler names the page proxy and DbPageMixin
+registers its contract. See the [guide](../guides/database-handlers-and-proxies.md).
+
+The page exposes a `dbhandler` proxy; the widget calls `dbhandler.dbselect`.
+`DbHandler` owns the generic endpoint, validation and search policy;
+`SqliteDbHandler` specializes database access. This replaces the initial
+DatabaseSelect/SQLiteAdapter split and the page-level database_select endpoint.
+`DbPageMixin` registers the proxy without adding endpoint methods to the page.
+Generic registered proxy dispatch is implemented in the shared page registry.
+The SQLite PoC uses it end to end. GenropyDbHandler remains future work.
+
+## dbSelect product differentiation — owner decision, 2026-09-15
+
+The owner reserves advanced dbSelect features for Genropy for product prestige
+and commercial differentiation. Standard dbSelect search tries prefix matching
+then containment, with case-sensitive and case-insensitive modes. Exact fallback
+semantics remain to specify. `auxColumns` belongs only to the Genropy capability
+set. Selecting a custom service through `method` is a common nice-to-have.
+Technical feasibility does not authorize adding every advanced feature to the
+common minimum or other adapters. This supersedes earlier broad minimum proposals
+in the [parameter audit](../development/dbselect-parameters-and-adapter-capabilities-2026-09-15.md).
+The three-tier structure remains agreed; remaining parameter membership is open.
+
+## Django integration ownership — 2026-09-15
+
+The owner moved all active Django adapter code, its tests, maintained guides and
+Django/Bakery examples to the sibling `gramlot-django` repository. Consumers now
+import `gramlot_django`; core no longer supplies `gramlot.contrib.django` or the
+`django` extra. Generic Python pages, shared host services and browser runtime
+remain here. Earlier Django ownership statements below are historical.
+This is a local migration, not a publication.
+
 # Recorded decisions and corrections
+
+## Canonical workspace relocation — owner direction, 2026-09-15
+
+Create `/Users/gporcari/Sviluppo/gramlot` and move the current Gramlot checkouts
+there while preserving absolute-path references and ChatGPT/Codex and Claude
+history. Preserve original project and conversation identities, Git history,
+working changes and recovery material. Keep old paths as compatibility links.
+Completed layout, backups and checks are recorded in [the workspace map](workspace-map.md#relocation-completed--2026-09-15).
+
+
+## GitHub organization and presentation sites — owner direction, 2026-09-15
+
+Transfer the Gramlot repositories from `genropy` to the newly created
+`gramlot-org` organization. This supersedes the earlier decision to keep them
+under `genropy`. Verified completed transfers: `gramlot` (ID 1361915318,
+public), `gramlot-site` (ID 1366231466, private), and `gramlot-rosetta`
+(ID 1361861170, public). All retain `main` as their default branch.
+
+The owner finds the current examples and tutorials difficult to manage for
+presentations and requires seven distinct hosting/integration scenarios,
+listed in [open work](open-work.md#presentation-sites--owner-direction-2026-09-15).
+The previous single-FastAPI-host direction does not cover this new requirement.
+Repository transfer is complete; example reorganization remains to be designed
+and implemented. Seven scenarios do not by themselves prescribe seven repositories.
+
+## Grid parity and prototype consolidation — owner direction, 2026-09-14
+
+The eventual target is the legacy grid's functional coverage with improved
+usability and implementation quality. Current grid/editor code is a functional
+prototype: review and clean it before consolidating responsibilities into grid,
+a possible gridEditor component and shared services. Current file boundaries
+are not an approved final architecture. Preserve verified behaviors and tests.
+Continue in usable increments; legacy menu/configurator audits describe pending
+coverage, not already implemented capabilities. The first popup editor slice
+uses `edit.modal` with an ordinary scalar control; nested Bag forms remain open.
+
+## Python recipe authoring shorthand — owner direction, 2026-09-14
+
+A Python recipe is ordinary construction-time composition, analogous in purpose
+to the legacy struct method. The owner proposes `@recipe` so
+`pane.name(...)` supplies the parent to the routine automatically, producing
+the same expanded Source as an explicit Python call. No recipe node or JS
+implementation is needed for this form. The owner explicitly requests a plan
+only for now; see the [plan](../development/python-recipe-decorator-plan-2026-09-14.md).
+
+## Page-management object named gramlot — owner decision, 2026-09-13
+
+Rename the Gramlot page-management object from `genro` to `gramlot`, to avoid
+conflicts with legacy Genropy's object. The owner requests a plan covering code,
+examples, documentation and the website. The [migration plan](../development/gramlot-page-object-rename-plan-2026-09-13.md)
+records verified execution boundaries and consumer packaging requirements.
+Owner correction: Gramlot ignores `genro`, except for the external `genro-*`
+libraries it uses. No alias, fallback, legacy detection, handling or coexistence
+tests belong in this migration. Interoperability is a separate topic.
+The runtime rename is implemented locally with no global singleton or compatibility
+path. Publication remains a separate owner action.
 
 ## Components and recipes — owner discussion, 2026-09-13
 
@@ -242,6 +352,14 @@ logical-block API and scheduling choices. See the
 [logical blocks plan](../development/logical-blocks-plan.md).
 
 Updated: 2026-09-08. Sources: the [five conversation summaries](conversations.md), preserved project documents, and the current Gramlot conversation. Message references identify the local historical archive; statements below do not establish untested implementation claims.
+
+## Genro ASGI GUI ownership — owner decision, 2026-09-14
+
+Genro ASGI provides the optional integration with Gramlot and owns the Python
+management pages inside its existing ServerApplication. The extra is
+`genro-asgi[gui]`; a separate integration distribution is not required. API-only
+use does not require Gramlot. Gramlot remains independent of Genro ASGI. See
+[local implementation](../development/server-application-gui-2026-09-14.md).
 
 ## Server independence — owner decision, 2026-09-09
 

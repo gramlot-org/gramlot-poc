@@ -31,15 +31,30 @@ import {WidgetLabel} from './decoration/widget-label.js';
 
 
 const CSS = `
+/* Opt-in tutorial/examples navigation skin; icon masks come from navigation-tree.css. */
+:host(.nav-tree) .tree-root > ul { padding-left:0; }
+:host(.nav-tree) .leaf,:host(.nav-tree) summary { min-height:32px; box-sizing:border-box; padding:5px 7px; gap:8px; line-height:1.45; border-radius:3px; }
+:host(.nav-tree) .leaf::before,:host(.nav-tree) summary::before { content:''; display:block; flex:none; width:18px; height:18px; margin:0; border:0; transform:none; background:currentColor; opacity:.75; mask:var(--tree-file) center/contain no-repeat; }
+:host(.nav-tree) summary::before { mask-image:var(--tree-folder); }
+:host(.nav-tree) summary::after { content:''; width:5px; height:5px; border-right:1px solid currentColor; border-bottom:1px solid currentColor; transform:rotate(-45deg); margin-left:auto; margin-right:3px; opacity:.55; }
+:host(.nav-tree) details[open] > summary::after { transform:rotate(45deg); }
+:host(.nav-tree) .leaf:hover,:host(.nav-tree) summary:hover { background:#e9edf1; color:#303941; }
+:host(.nav-tree) .selected,:host(.nav-tree) .selected:hover { background:#e2e7ec; color:#25313a; font-weight:500; }
+
 :host { display:block; font:inherit; color:inherit; }
 ul { list-style:none; margin:0; padding-left:17px; }
 .tree-root > ul { padding-left:2px; }
 details.field-group > ul { padding-left:0; }
+details.field-group[open] > ul { background:var(--tree-group-sheet-bg,#fff9e9); border-radius:0 0 7px 7px; padding-bottom:5px; margin-bottom:4px; box-shadow:0 1px 2px #77643d14; }
 li { line-height:var(--tree-line-height,1.7); }
 summary { display:flex; align-items:center; gap:7px; padding:var(--tree-row-padding,2px) 5px; cursor:pointer; user-select:none; list-style:none; }
 summary::-webkit-details-marker { display:none; }
 summary::before { content:''; width:5px; height:5px; border-right:1.5px solid #78818a; border-bottom:1.5px solid #78818a; transform:rotate(-45deg); flex:none; margin:0 3px; }
 details[open] > summary::before { transform:rotate(45deg); }
+details.field-group > summary::before { content:''; display:block; width:18px; height:16px; margin:0; border:0; transform:none; background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23858c96%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%207V5a1%201%200%200%201%201-1h5l2%203h9a1%201%200%200%201%201%201v11H3Z%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat; }
+details.field-group[open] > summary::before { transform:none; background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23858c96%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%2019V5a1%201%200%200%201%201-1h5l2%203h9v3%22%2F%3E%3Cpath%20d%3D%22M3%2019%206%2010h17l-3%209Z%22%2F%3E%3C%2Fsvg%3E"); }
+details.field-group > summary { padding-left:23px; }
+details.field-group > summary > .group-caption { flex:0 1 auto; font-weight:500; color:var(--tree-group-color,#80516f); }
 .leaf { padding:var(--tree-row-padding,2px) 5px var(--tree-row-padding,2px) 23px; cursor:pointer; }
 summary:hover,.leaf:hover { background:#f0f3f6; }
 .selected,.selected:hover { background:var(--tree-selected-bg,#e4edf6); color:var(--tree-selected-color,inherit); font-weight:var(--tree-selected-weight,inherit); border-radius:2px; }
@@ -132,13 +147,6 @@ function defineComponents() {
 
         _caption(row, caption, path, node) {
             const typeAttribute = this.getAttribute('typeAttribute');
-            if (typeAttribute && node?.getAttr('node_kind') === 'group') {
-                const icon = document.createElement('span');
-                icon.className = 'group-icon';
-                icon.textContent = '◇';
-                icon.setAttribute('aria-hidden', 'true');
-                row.append(icon);
-            }
             if (typeAttribute && node && node.getAttr('node_kind') !== 'group') {
                 const dtype = String(node.getAttr(typeAttribute) || '?');
                 const typeNames = {A:'Text', C:'Character', T:'Text', I:'Integer', L:'Integer',
@@ -193,7 +201,7 @@ function defineComponents() {
                     row.append(marker);
                 }
             }
-            if (node && this.hasAttribute('showAttributes')) {
+            if (node && this.hasAttribute('showAttributes') && !(typeAttribute && node.getAttr('node_kind') === 'group')) {
                 const info = document.createElement('button');
                 info.type = 'button'; info.className = 'node-info'; info.textContent = 'i';
                 info.setAttribute('aria-label', `Attributes of ${caption}`);
@@ -382,6 +390,14 @@ function defineComponents() {
             const li = document.createElement('li');
             li.className = 'leaf';
             this._caption(li, caption, path, node);
+            if (this.hasAttribute('showValues') && this.getAttribute('showValues') !== 'false') {
+                const value = document.createElement('span');
+                value.className = 'node-value';
+                const scalar = node.getValue(true);
+                value.textContent = scalar === null ? 'null' : String(scalar ?? '');
+                value.style.cssText = 'margin-left:16px;overflow-wrap:anywhere;white-space:pre-wrap';
+                li.append(value);
+            }
             if (path === this._selectedPath) { li.classList.add('selected'); }
             li.addEventListener('click', () => this._select(path, li));
             return li;
@@ -466,7 +482,7 @@ function defineComponents() {
             super._render();
             const table = this.getAttribute('table');
             const model = this._root.firstElementChild;
-            if (table && model) {
+            if (table && model && this.getAttribute('modelDialect') !== 'generic') {
                 const ul = document.createElement('ul');
                 const li = document.createElement('li');
                 const details = document.createElement('details');

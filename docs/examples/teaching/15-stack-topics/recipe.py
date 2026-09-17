@@ -12,9 +12,9 @@ class Page(WebPage):
         stack.contentPane(pageName='details', title='Details').div('Customer details')
         stack.contentPane(pageName='history', title='History').div('Customer history')
         root.button('Open history via publish',
-                    action="genro.publish('pages_switchPage', 'history');")
+                    action="gramlot.publish('pages_switchPage', 'history');")
         root.button('Previous page',
-                    action="genro.publish('pages_switchPage', '*prev*');")
+                    action="gramlot.publish('pages_switchPage', '*prev*');")
         root.dataController("""
             this.SET('message', 'Visible page: ' + pageName);
             if (pageName === 'history') this.SET('visits', visits + 1);

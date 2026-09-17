@@ -101,11 +101,11 @@ test('a forest (two roots in the body) raises', () => {
 test('reactivity L0: a field change inside the collection refreshes the blocks', () => {
     setupDom();
     const root = document.createElement('div');
-    const genro = new Application(root, new StatesPage('main'));
+    const gramlot = new Application(root, new StatesPage('main'));
 
     // no reader registered on this exact path: the component's anchor
     // subscription (main.states) must catch it (CMP.7).
-    genro.live(() => genro.data.setItem('main.states.QLD.capital', 'BRISBANE'));
+    gramlot.live(() => gramlot.data.setItem('main.states.QLD.capital', 'BRISBANE'));
 
     const rows = root.querySelectorAll('.row');
     assert.equal(rows.length, 2);
@@ -116,7 +116,7 @@ test('reactivity L0: a field change inside the collection refreshes the blocks',
 test('reactivity: adding and removing a collection item adds/removes blocks', () => {
     setupDom();
     const root = document.createElement('div');
-    const genro = new Application(root, new StatesPage('main'));
+    const gramlot = new Application(root, new StatesPage('main'));
 
     // A row is born ATOMICALLY (a whole Bag): the ins event on the
     // collection names the row → row_ins. A deep leaf-by-leaf set would
@@ -124,11 +124,11 @@ test('reactivity: adding and removing a collection item adds/removes blocks', ()
     const nsw = new Bag();
     nsw.setItem('name', 'New South Wales');
     nsw.setItem('capital', 'Sydney');
-    genro.live(() => genro.data.setItem('main.states.NSW', nsw));
+    gramlot.live(() => gramlot.data.setItem('main.states.NSW', nsw));
     assert.equal(root.querySelectorAll('.row').length, 3);
     assert.ok(root.textContent.includes('Sydney'));
 
-    genro.live(() => genro.data.pop('main.states.VIC'));
+    gramlot.live(() => gramlot.data.pop('main.states.VIC'));
     const rows = root.querySelectorAll('.row');
     assert.equal(rows.length, 2);
     assert.ok(!root.textContent.includes('Melbourne'));
@@ -146,9 +146,9 @@ test('expansion pointers never register; the anchor does (CMP.7)', () => {
         main(root) { root.body().card({ store: '^rec' }); }
     }
     const root = document.createElement('div');
-    const genro = new Application(root, new CardPage('main'));
+    const gramlot = new Application(root, new CardPage('main'));
 
-    assert.ok(genro.handler.pointerMap.has('main.rec'), 'the anchor registered');
-    assert.ok(!genro.handler.pointerMap.has('main.rec.label'),
+    assert.ok(gramlot.handler.pointerMap.has('main.rec'), 'the anchor registered');
+    assert.ok(!gramlot.handler.pointerMap.has('main.rec.label'),
         'the expansion pointers did not');
 });

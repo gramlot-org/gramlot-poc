@@ -1,0 +1,42 @@
+[
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-20 10:00:00.000000",
+    "__ins_user": "",
+    "__mod_ts": "",
+    "code": "MGR",
+    "description": "Manager"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-20 10:00:00.000000",
+    "__ins_user": "",
+    "__mod_ts": "",
+    "code": "DEV",
+    "description": "Developer"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-20 10:00:00.000000",
+    "__ins_user": "",
+    "__mod_ts": "",
+    "code": "SAL",
+    "description": "Sales"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-20 10:00:00.000000",
+    "__ins_user": "",
+    "__mod_ts": "",
+    "code": "ADM",
+    "description": "Administrator"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-20 10:00:00.000000",
+    "__ins_user": "",
+    "__mod_ts": "",
+    "code": "SUP",
+    "description": "Support"
+  }
+]

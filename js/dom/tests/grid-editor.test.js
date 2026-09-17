@@ -8,14 +8,14 @@ import {Application, HtmlBuilder} from '../src/index.js';
 import '../src/collections/grid.js';
 import '../src/collections/inputs.js';
 
-function fixture(datamode='bag') {
+function fixture(datamode='bag',totalize=false) {
     setupDom();
     class Page extends HtmlBuilder {
         static wc_requires=['grid','inputs'];
         main(root) {
-            const grid=root.quickGrid({value:'^rows',datamode});
+            const grid=root.quickGrid({value:'^rows',datamode,footer:totalize});
             grid.column('name',{edit:true});
-            grid.column('amount',{dtype:'L',edit:{validate_min:0}});
+            grid.column('amount',{dtype:'L',totalize,edit:{validate_min:0}});
             root.p('^rows.r1.name');
         }
     }
@@ -42,6 +42,9 @@ for(const mode of ['bag','attr']) test(`Source cell editor preserves drafts acro
     assert.equal(input.value,'Changed');
     assert.equal(grid.collectionStore().getValue(grid.collectionStore().row('r1').node,'name'),'Original');
     assert.equal(await editor.confirm(),true);
+    assert.equal(editor.changes.getNodes().length,1);
+    assert.equal(editor.changes.getNodes()[0].attr.oldValue,'Original');
+    assert.equal(editor.changes.getNodes()[0].attr.newValue,'Changed');
     assert.equal(grid.collectionStore().getValue(grid.collectionStore().row('r1').node,'name'),'Changed');
     if(mode==='bag')assert.equal(host.querySelector('p').textContent,'Changed');
     await editor.open('r1',grid.columns[0].id);
@@ -79,6 +82,27 @@ test('invalid numbers stay open, external writes are not overwritten, and remova
 });
 
 
+test('suspended invalid editors retain their binding and are disposed with the grid',async()=>{
+    const {app,host,grid}=fixture();
+    grid.shadowRoot.querySelector('.cell').dispatchEvent(new window.MouseEvent('dblclick',{bubbles:true}));
+    const editor=grid.gridEditor;
+    await editor.open('r1',grid.columns[1].id);
+    const widget=editor.widget;
+    widget.fieldControl.value='-2';
+    widget.fieldControl.dispatchEvent(new window.Event('input',{bubbles:true}));
+    await editor.open('r1',grid.columns[0].id);
+    assert.equal(editor.drafts.size,1);
+    assert.equal(grid.storeBag.getItem('r1.amount'),2);
+    await editor.open('r1',grid.columns[1].id);
+    assert.equal(editor.widget,widget);
+    assert.equal(widget.fieldControl.value,'-2');
+    await editor.open('r1',grid.columns[0].id);
+    editor.dispose();
+    assert.equal(editor.drafts.size,0);
+    assert.equal(host.querySelector('gnr-numbertextbox'),null);
+    app.dispose();host.remove();
+});
+
 test('cell snapshots preserve Decimal identity and exact precision',()=>{
     const snapshot=new ValueSnapshot();
     const original=createDecimal('12345678901234567890.123456789');
@@ -86,4 +110,17 @@ test('cell snapshots preserve Decimal identity and exact precision',()=>{
     assert.equal(copy.toString(),original.toString());
     assert.ok(snapshot.equal(original,copy));
     assert.ok(!snapshot.equal(original,createDecimal('12345678901234567890.123456788')));
+});
+
+test('footer totals preserve Decimal arithmetic and track external writes',()=>{
+    const {app,host,grid}=fixture('bag',true);
+    app.live(()=>{
+        grid.storeBag.setItem('r1.amount',createDecimal('0.1'));
+        const row=new Bag();row.setItem('name','Second');row.setItem('amount',createDecimal('0.2'));
+        grid.storeBag.setItem('r2',row);
+    });
+    assert.equal(grid.bands.totals.getItem('amount').toString(),'0.3');
+    app.live(()=>grid.storeBag.popNode('r2'));
+    assert.equal(grid.bands.totals.getItem('amount').toString(),'0.1');
+    app.dispose();host.remove();
 });

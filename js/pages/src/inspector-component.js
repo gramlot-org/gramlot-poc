@@ -20,7 +20,10 @@ export class GramlotInspector extends HTMLElement {
         if (!response.ok) throw new Error(`Inspector recipe unavailable (${response.status})`);
         const recipe = await response.text();
         if (this.disposed || this.application._disposed) return;
-        this.tool = mountInspector(this.shadowRoot, fromTytx(recipe, 'json'), this.application, {shortcuts: false});
+        this.tool = mountInspector(this.shadowRoot, fromTytx(recipe, 'json'), this.application, {
+            shortcuts: false,
+            origins: this.origins,
+        });
         if (!this.tool) return;
         this.shadowRoot.querySelector('[data-inspector="toggle"]').hidden = true;
         const style = this.ownerDocument.createElement('link');
@@ -42,6 +45,10 @@ export class GramlotInspector extends HTMLElement {
     set opened(value) {
         if (this.tool && !this.disposed) this.tool.app.live(() => this.tool.app.builder.data.setItem('opened', Boolean(value)));
     }
+    setOrigins(origins) {
+        this.origins = origins;
+        this.tool?.setOrigins(origins);
+    }
     disconnectedCallback() { this.dispose(); }
     dispose() {
         if (this.disposed) return;
@@ -58,9 +65,10 @@ registerComponentCollection('inspector', {
 });
 // The tool host explicitly imports this module; preserve its immediate activation.
 getCollection('inspector').defineComponents();
-export function createInspector(application, presentation = 'floating') {
+export function createInspector(application, presentation = 'floating', origins = {}) {
     const component = application.target.root.ownerDocument.createElement('gramlot-inspector');
     component.application = application;
+    component.setOrigins(origins);
     component.setAttribute('presentation', presentation);
     if (presentation === 'embedded') {
         component.hidden = true;

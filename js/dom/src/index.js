@@ -21,3 +21,9 @@ export {GridChangeManager} from './collections/grid-formulas.js';
 export {GridStruct} from './collections/grid-authoring.js';
 export {UrlResolver, OpenApiResolver, jsonBag, plainJson} from './resolvers/http.js';
 export {ServerCallService, ServerCallError} from './services/server-call.js';
+
+// Experimental common database library; no persistence service is installed implicitly.
+export {BagDB} from './database/common/bagdb.js';
+
+export {ModelProvider} from './database/common/read-adapter.mjs';
+export {ModelCatalog} from './database/common/model.mjs';

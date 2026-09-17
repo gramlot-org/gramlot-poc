@@ -142,7 +142,7 @@ const CSS=`
 .gnr-control-tools{display:flex;align-items:stretch;position:relative;min-width:0;border:1px solid var(--field-border,#c8c8c8);border-radius:var(--form-field-radius,3px);background:var(--field-bg,#fff)}
 .gnr-control-tools:focus-within{border-color:var(--field-focus-border,#4a90d9)}
 .gnr-control-tools>.gnr-tooled-control{flex:1 1 auto;min-width:0;border:0!important;border-radius:inherit;outline:none}
-.gnr-control-tool-strip{display:flex;align-items:center;flex:none;padding-inline:2px}
+.gnr-control-tool-strip{display:var(--field-tools-display,flex);align-items:center;flex:none;padding-inline:2px}
 .gnr-control-tool{display:flex;align-items:center;justify-content:center;font:inherit;color:inherit;background:transparent;border:0;border-radius:2px;margin:0;padding:3px;cursor:pointer}
 .gnr-control-tool:hover:not(:disabled),.gnr-control-tool:focus-visible{background:var(--field-tool-hover,#e8f0fb)}
 .gnr-control-tool:disabled{opacity:.45;cursor:default}

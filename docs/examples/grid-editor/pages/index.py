@@ -12,6 +12,7 @@ class Page(WebPage):
     def main(self, root):
         root.h2('Editable grid — stable editor experiment')
         root.p('Double-click a cell. Enter confirms, Tab moves forward, Shift-Tab moves back, Escape discards. Tab selects the text; Up/Down moves within the column. Scroll away and back to recover an open draft.')
+        extra_columns = self.editor_columns()
         data = Bag()
         for i in range(80):
             row = Bag()
@@ -19,6 +20,8 @@ class Page(WebPage):
             row.set_item('quantity', 2)
             row.set_item('price', 12.5)
             row.set_item('product', 'lamp')
+            for field, _label, value, _dtype, _width, _editor in extra_columns:
+                row.set_item(field, value)
             data.set_item(f'r{i}', row)
         root.data('rows', data)
         struct = GridStruct()
@@ -29,8 +32,13 @@ class Page(WebPage):
         cells.cell('product', name='Product ID', width=130,
                    edit=dict(tag='dbSelect', rpcmethod='products', searchdelay=80))
         cells.cell('total', name='Total', dtype='N', width=90, formula='quantity * price', calculated=True)
+        for field, label, _value, dtype, width, editor in extra_columns:
+            cells.cell(field, name=label, dtype=dtype, width=width, edit=editor)
+        cells.cell('discounted_total', name='After discount', dtype='N', width=125,
+                   formula='quantity * price * (1 - discount / 100)', calculated=True)
         root.data('struct', struct)
-        root.grid(store='^rows', structpath='struct', height='340px')
+        root.grid(store='^rows', structpath='struct', height='380px', frozenColumns=1)
+        root.p('Scroll horizontally to try every field editor. Description stays visible. Total and After discount recalculate when Quantity, Price or Discount is confirmed.', _class='example-note')
         root.p('^rows.r0.description', mask='First description in Data: %s')
         root.p('^rows.r0.quantity', mask='First quantity in Data: %s')
         root.p('^rows.r0.product', mask='First product ID in Data: %s')
@@ -60,6 +68,39 @@ class Page(WebPage):
             ('color', 'Color', '#336699', None, 120, dict(tag='colorpicker')),
             ('password', 'Password (demo)', 'demo-only', None, 160, dict(tag='passwordbox')),
         ])
+
+    def editor_columns(self):
+        """Every currently supported scalar field-editor family in one grid."""
+        return [
+            ('notes', 'Multiline notes', 'First line\nSecond line', None, 240,
+             dict(tag='textBoxArea', rows=4, height='100px', maxlength=200)),
+            ('country', 'Filtering select', 'it', None, 150,
+             dict(tag='filteringSelect', values='it:Italy,en:England,fr:France')),
+            ('free_choice', 'Combo box', 'Italy', None, 150,
+             dict(tag='comboBox', values='Italy,England,France')),
+            ('remote', 'Remote select', 'lamp', None, 160,
+             dict(tag='remoteSelect', rpcmethod='products', searchdelay=80)),
+            ('local_choice', 'Callback select', 'a', None, 160,
+             dict(tag='callbackSelect', callback="""
+                const rows = [{id:'a',name:'Alpha'},{id:'b',name:'Beta'},{id:'g',name:'Gamma'}];
+                return {rows:rows.filter(r => kw._id != null ? r.id === String(kw._id)
+                    : r.name.toLowerCase().includes(String(kw._querystring || '').toLowerCase())),
+                    identifier:'id',caption:'name'};
+             """)),
+            ('datasets', 'Multiple choices', 'cost,revenue', None, 210,
+             dict(tag='checkBoxText', popup=True, cols=1,
+                  values='cost:Cost,revenue:Revenue,profit:Profit,orders:Orders,units:Units')),
+            ('enabled', 'Checkbox', True, 'B', 100, dict(tag='checkBox')),
+            ('day', 'Date', date(2026, 9, 14), 'D', 150,
+             dict(tag='dateTextBox', locale='it-IT', symbolic=True)),
+            ('hour', 'Time', time(14, 30), 'H', 130, dict(tag='timeTextBox')),
+            ('discount', 'Discount %', 10, 'L', 150,
+             dict(tag='horizontalSlider', min=0, max=100, step=5)),
+            ('vertical', 'Vertical slider', 40, 'L', 140,
+             dict(tag='verticalSlider', min=0, max=100, step=5, height='110px')),
+            ('color', 'Color', '#336699', None, 120, dict(tag='colorpicker')),
+            ('password', 'Password (demo)', 'demo-only', None, 170, dict(tag='passwordbox')),
+        ]
 
     def widget_grid(self, root, name, columns):
         data = Bag()

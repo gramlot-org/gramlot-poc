@@ -1,0 +1,29 @@
+[
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.152007",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.152011",
+    "code": "GST",
+    "description": "Goods and Services Tax",
+    "vat_rate": "10.00"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.152381",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.152385",
+    "code": "FRE",
+    "description": "GST Free",
+    "vat_rate": "0.00"
+  },
+  {
+    "__del_ts": "",
+    "__ins_ts": "2026-02-10 12:26:41.152511",
+    "__ins_user": "",
+    "__mod_ts": "2026-02-10 12:26:41.152515",
+    "code": "INP",
+    "description": "Input Taxed",
+    "vat_rate": "0.00"
+  }
+]

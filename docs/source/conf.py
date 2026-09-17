@@ -11,20 +11,9 @@ extensions = []
 root_doc = 'index'
 exclude_patterns = []
 nitpicky = True
-html_theme = 'furo'
+html_theme = "sphinx_rtd_theme"
 html_logo = '../../assets/gramlot-logo.png'
 html_static_path = ['_static']
 html_css_files = ['custom.css']
-html_theme_options = {
-    'light_css_variables': {
-        'color-brand-primary': '#1643c5',
-        'color-brand-content': '#1643c5',
-        'color-sidebar-background': '#f5f7fc',
-    },
-    'dark_css_variables': {
-        'color-sidebar-background': '#161a24',
-        'color-brand-primary': '#ffcc43',
-        'color-brand-content': '#8fb2ff',
-    },
-}
+html_theme_options = {"style_nav_header_background": "#2980b9"}
 html_title = f'Gramlot {release} documentation'

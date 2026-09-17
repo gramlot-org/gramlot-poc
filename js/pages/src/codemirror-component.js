@@ -1,6 +1,8 @@
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 import {registerComponentCollection, builtinComponents, getCollection} from 'gramlot-dom';
 import {WidgetLabel} from '/_assets/dom/widget-label.js';
+import {loadCodeMirror} from '/_assets/dom/editor-dependencies.js';
+import {loadCodeMirrorFromCdn} from '/_assets/dom/codemirror-cdn.js';
 import '/_assets/dom/collections/storetree.js';
 import '/_assets/dom/collections/layout.js';
 import {defineGramlotIde} from '/_assets/dom/collections/gramlot-ide.js';
@@ -13,7 +15,7 @@ registerComponentCollection('labEditors', {
         defineGramlotIde();
         if (customElements.get('gnr-codemirror')) { return; }
         class CodeMirrorElement extends HTMLElement {
-            static get observedAttributes() { return ['value', 'language', 'readonly']; }
+            static get observedAttributes() { return ['value', 'language', 'readonly', 'provider']; }
             constructor() {
                 super();
                 this.attachShadow({mode: 'open'});
@@ -50,26 +52,12 @@ registerComponentCollection('labEditors', {
                 this._content.replaceChildren(this.fallback);
                 this._widgetLabel.connect();
                 try {
-                    const deps = '?deps=@codemirror/state@6.7.4,@codemirror/view@6.43.11';
-                    const [{EditorView, basicSetup}, {EditorState}, {oneDark}, language] = await Promise.all([
-                        import('https://esm.sh/codemirror@6.0.2' + deps),
-                        import('https://esm.sh/@codemirror/state@6.7.4'),
-                        import('https://esm.sh/@codemirror/theme-one-dark@6.1.3' + deps),
-                        this.getAttribute('language') === 'python'
-                            ? import('https://esm.sh/@codemirror/lang-python@6.2.1' + deps)
-                            : this.getAttribute('language') === 'css'
-                            ? import('https://esm.sh/@codemirror/lang-css@6.3.1' + deps)
-                            : ['xml','html'].includes(this.getAttribute('language'))
-                            ? import('https://esm.sh/@codemirror/lang-xml@6.1.0' + deps)
-                            : ['text','markdown'].includes(this.getAttribute('language'))
-                            ? Promise.resolve({})
-                            : import('https://esm.sh/@codemirror/lang-javascript@6.2.3' + deps)
-                    ]);
+                    const {EditorView, basicSetup, EditorState, oneDark, languageExtension}
+                        = await (this.getAttribute('provider') === 'cdn' ? loadCodeMirrorFromCdn : loadCodeMirror)(this.getAttribute('language'));
                     if (!this.isConnected || this.generation !== generation) { return; }
                     const readonly = this.hasAttribute('readonly');
-                    this.fallback.remove();
                     this.editor = new EditorView({parent: this._content, doc: this._value,
-                        extensions: [basicSetup, oneDark, ...((language.python || language.css || language.xml || language.javascript) ? [(language.python || language.css || language.xml || language.javascript)()] : []),
+                        extensions: [basicSetup, oneDark, ...(languageExtension ? [languageExtension] : []),
                             EditorState.readOnly.of(readonly), EditorView.editable.of(!readonly),
                             EditorView.lineWrapping,
                             EditorView.contentAttributes.of({tabindex: '0', 'aria-label': this.getAttribute('aria-label') || 'Code'}),
@@ -79,8 +67,9 @@ registerComponentCollection('labEditors', {
                                     this.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
                                 }
                             })]});
+                    this.fallback.remove();
                 } catch (error) {
-                    console.warn('CodeMirror CDN unavailable; textarea retained', error);
+                    console.warn('CodeMirror unavailable; textarea retained', error);
                 }
             }
             disconnectedCallback() {

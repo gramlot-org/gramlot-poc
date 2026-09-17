@@ -36,8 +36,8 @@ export class OpenApiClientService {
    }catch(error){set(node,'formError',error.message);}
  }
  execute(node,args) {
- const {_triggerpars,genro}=args;
-   if(_triggerpars?.kw?.node?.label!=='send'){genro.resolvers.cancel(node);set(node,'requestState',jsonBag({state:'cancelled',error:null}));return;}
+ const {_triggerpars,gramlot}=args;
+   if(_triggerpars?.kw?.node?.label!=='send'){gramlot.resolvers.cancel(node);set(node,'requestState',jsonBag({state:'cancelled',error:null}));return;}
    try {
     const model=plainJson(get(node,'operationModel'));
     const fields=plainJson(get(node,'fields'));const input=get(node,'input');const values={};const body={};let whole;
@@ -53,7 +53,7 @@ export class OpenApiClientService {
     }
     const request=buildRequest(model,values,include?(fields.some(f=>f.key==='body')?whole:body):undefined,get(node,'authorization'));
     set(node,'formError','');set(node,'requestPreview',`${request.options.method} ${request.url}\n${request.options.body||''}`);
-    genro.resolvers.load(node,'url',{destination:'response',status:'requestState',url:String(request.url),
+    gramlot.resolvers.load(node,'url',{destination:'response',status:'requestState',url:String(request.url),
      method:request.options.method,headers:request.options.headers,body:request.options.body?JSON.parse(request.options.body):undefined,
      responseType:'auto',envelope:true});
    }catch(error){set(node,'formError',error.message);}

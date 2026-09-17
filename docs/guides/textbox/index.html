@@ -1,0 +1,179 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Dal campo HTML nativo al textBox Gramlot: una guida introduttiva ai Web Components basata sul codice reale."><title>Dentro textBox · Dal campo HTML al componente Gramlot</title><style>
+:root{--ink:#20323b;--muted:#526875;--accent:#176b70;--line:#d8e2e4;--paper:#fff;--bg:#edf2f3;font:17px/1.75 system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg)}*{box-sizing:border-box}body{margin:0}a{color:var(--accent);text-underline-offset:3px}aside{position:fixed;inset:0 auto 0 0;width:270px;background:#132e36;color:#dce9ec;padding:32px 23px;overflow:auto}aside strong{font-size:24px;color:white}aside p{font-size:13px;color:#9dbac0}nav a{display:block;color:#d7e7e9;text-decoration:none;font-size:13px;line-height:1.5;padding:8px 0;border-bottom:1px solid #ffffff15}nav a:hover{color:white;text-decoration:underline}main{max-width:1440px;margin-left:270px;padding:44px 50px 80px}.cover,section{max-width:960px;margin:0 auto 24px;background:var(--paper);padding:44px 50px;border:1px solid var(--line);border-radius:8px;scroll-margin-top:24px}.cover{background:#dcecef;border-top:5px solid var(--accent)}.eyebrow{text-transform:uppercase;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--accent)}h1{font-size:clamp(34px,4vw,54px);line-height:1.12;letter-spacing:-1.6px;max-width:700px;margin:22px 0}h2{font-size:26px;line-height:1.3;letter-spacing:-.5px;margin:0 0 22px}p{margin:0 0 19px}.lead{font-size:21px;color:#395966}.meta{font-size:13px;color:var(--muted)}strong{color:#153944}.note{padding:20px 23px;border-left:4px solid var(--accent);background:#eef6f6;margin:24px 0;font-size:15px}code{font: .87em ui-monospace,SFMono-Regular,Consolas,monospace;color:#14555c;background:#edf4f5;padding:2px 4px;border-radius:3px;overflow-wrap:anywhere}.code{margin:24px 0;border-radius:6px;overflow:hidden;background:#172d37;color:#e2eff0}.codebar{display:flex;justify-content:space-between;gap:14px;padding:9px 17px;background:#23424b;font:12px system-ui;letter-spacing:.3px}.codebar span{color:#b4cbd0}pre{margin:0;padding:20px;overflow:auto;font-size:14px;line-height:1.65}pre code{font:inherit;color:inherit;background:none;padding:0;overflow-wrap:normal}table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;table-layout:fixed}th{text-align:left;background:#eaf2f3;font-size:12px;text-transform:uppercase;letter-spacing:.5px}td,th{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}li{margin:10px 0}.anatomy{border:1px solid var(--line);padding:22px;background:#f4f7f8;margin:24px 0;font:14px ui-monospace,monospace}.host-label{color:var(--muted);margin-bottom:12px}.host{border:2px solid #488c95;padding:18px;background:white}.shadow{border:1px dashed #7aa7ac;background:#eef7f7;padding:18px;margin-top:16px}.inside{padding:10px;background:white;margin-top:10px}.native{padding:14px;background:#dae9cd;border:1px solid #a9c397;margin-top:10px}small{font:12px system-ui;color:var(--muted);display:block;margin-top:6px}.flow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:22px 0;font-size:13px}.flow span{background:#e1f0f0;padding:10px 12px;border:1px solid #b6d4d7;border-radius:4px}.source{font-size:13px}details{background:#f0f5f5;border:1px solid var(--line);padding:18px 22px;margin:24px 0}summary{cursor:pointer;font-weight:600}details p:first-of-type{margin-top:20px}.footer{font-size:13px;color:var(--muted);text-align:center}a:focus-visible,summary:focus-visible{outline:3px solid #d9a64b;outline-offset:4px}@media(max-width:1000px){aside{width:220px}main{margin-left:220px;padding:25px}.cover,section{padding:32px}}@media(max-width:720px){aside{position:static;width:auto;padding:22px}nav{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}main{margin:0;padding:16px}.cover,section{padding:25px 21px}h2{font-size:23px}table{font-size:12px}td,th{padding:10px 7px}pre{font-size:12px;padding:15px}.codebar{flex-direction:column;gap:3px}}@media print{aside{display:none}main{margin:0;padding:0}.cover,section{border:0;border-radius:0;padding:0;margin:0 0 24px;max-width:none;break-before:page}.cover{background:white}body{background:white;font-size:11pt}h1{font-size:32pt}h2{font-size:20pt}pre{white-space:pre-wrap;font-size:9pt}.code{break-inside:avoid}tr{break-inside:avoid}a{color:inherit}details{display:block}details>*{display:block}nav{display:none}@page{size:A4;margin:18mm}}
+</style></head><body><aside><strong>Gramlot</strong><p>QUADERNO DI UN COMPONENTE<br>Una guida da leggere dall’inizio</p><nav aria-label="Capitoli"><a href="#inizio">01 · Il punto di partenza: un campo di testo</a><a href="#problema">02 · Che cosa vogliamo riutilizzare</a><a href="#webcomponent">03 · Che cos’è un Web Component</a><a href="#shadow">04 · Dentro e fuori: lo Shadow DOM</a><a href="#interfaccia">05 · Il componente deve avere una porta di accesso</a><a href="#eventi">06 · Come una modifica esce dal componente</a><a href="#reale">07 · Il textBox reale è piccolo perché eredita molto</a><a href="#manifesto">08 · Due registrazioni: browser e Gramlot</a><a href="#python">09 · Come si usa: Python prima di tutto</a><a href="#viaggio">10 · Il viaggio completo di un valore</a><a href="#parametri">11 · Le operazioni di ogni giorno</a><a href="#null-validazione">12 · Null, errori e aspetto: servizi condivisi</a><a href="#modificare">13 · Dove intervenire quando vuoi cambiare qualcosa</a><a href="#fonti">14 · Mappa del codice e confini di questa guida</a></nav></aside><main><header class="cover"><div class="eyebrow">Dal browser all’applicazione</div><h1>Dentro textBox</h1><p class="lead">Come un normale input diventa un componente Gramlot. Un passo alla volta, senza dare per conosciuti i Web Components.</p><p>Seguiremo un solo campo di testo: prima l’elemento nativo, poi il suo involucro, infine il collegamento con Python e con i dati della pagina.</p><p class="meta">Lettura guidata · 14 capitoli · circa 25 minuti<br>Codice di riferimento: Gramlot 0.1.5 locale · 14 settembre 2026</p></header><section id="inizio"><h2>01 · Il punto di partenza: un campo di testo</h2>
+<p>Un campo in cui scrivere sembra un oggetto semplice. Per capirlo partiamo dalla parte che il browser sa già costruire: <code>&lt;input type="text"&gt;</code>. Il browser fornisce cursore, selezione del testo, tastiera, copia e incolla. Gramlot conserva questo lavoro.</p>
+<p>HTML descrive gli elementi della pagina. Un <strong>tag</strong> è un nome tra parentesi angolari; un <strong>attributo</strong> è un’opzione scritta nel tag. <code>placeholder</code> mostra un suggerimento quando il campo è vuoto. Un’etichetta visibile dice a che cosa serve il campo, anche dopo che abbiamo iniziato a scrivere.</p><div class="code"><div class="codebar">HTML <span>Esempio didattico</span></div><pre><code>&lt;label for=&quot;nome&quot;&gt;Nome&lt;/label&gt;
+&lt;input id=&quot;nome&quot; type=&quot;text&quot; placeholder=&quot;Scrivi il nome&quot;&gt;</code></pre></div>
+<p>Il browser trasforma questo testo in oggetti collegati tra loro: il <strong>DOM</strong>, cioè l’albero degli elementi della pagina. JavaScript può leggere e modificare questi oggetti. CSS stabilisce il loro aspetto.</p>
+<div class="note">Il campo HTML nudo non conosce una Data Bag, un percorso come <code>persona.nome</code> o il significato di <code>^</code>. La digitazione cambia il valore del campo; il collegamento ai dati dell’applicazione è un altro compito.</div>
+</section><section id="problema"><h2>02 · Che cosa vogliamo riutilizzare</h2>
+<p>In un’applicazione non serve soltanto una casella. Vogliamo un’etichetta allineata, stato disabilitato, sola lettura, messaggi di errore, un comportamento coerente quando arriva un nuovo valore e una regola precisa su quando salvare ciò che l’utente scrive.</p>
+<p>Se ricostruiamo ogni volta questi dettagli, ogni campo può comportarsi diversamente. Un componente li mette a disposizione attraverso un’interfaccia: chi lo usa sceglie i parametri; chi lo implementa gestisce l’interno.</p>
+<table><thead><tr><th>Responsabilità</th><th>Chi la svolge nel textBox attuale</th></tr></thead><tbody>
+<tr><td>Scrivere, selezionare e modificare testo</td><td>Il controllo HTML nativo</td></tr>
+<tr><td>Esporre valore, etichetta e stati del campo</td><td>Il Web Component e le basi condivise</td></tr>
+<tr><td>Collegare il campo a un percorso dati</td><td>Il runtime Gramlot</td></tr>
+<tr><td>Descrivere l’interfaccia dell’applicazione</td><td>Il codice Python o JavaScript dell’autore</td></tr>
+</tbody></table>
+</section><section id="webcomponent"><h2>03 · Che cos’è un Web Component</h2>
+<p>Possiamo insegnare al browser un nuovo nome di elemento. Per esempio <code>&lt;demo-textbox&gt;</code> può indicare una nostra classe JavaScript. La classe è la definizione del comportamento; ciascun elemento presente nella pagina è un’istanza distinta.</p>
+<p><strong>Custom Element</strong> significa proprio elemento personalizzato. Una classe deriva da <code>HTMLElement</code>, la base degli elementi HTML, e viene registrata con <code>customElements.define</code>. I nomi personalizzati contengono un trattino. La registrazione dice al browser quale classe usare per quel tag. <a class="source" href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements">Approfondimento: custom elements</a>.</p>
+<p>“Web Components” è il nome di un insieme di funzionalità del browser. Qui ci interessano soprattutto gli elementi personalizzati e lo Shadow DOM. Template e slot sono strumenti aggiuntivi; non sono un passaggio obbligatorio per capire questo campo.</p>
+<div class="code"><div class="codebar">JavaScript <span>Esempio didattico</span></div><pre><code>class DemoTextBox extends HTMLElement {
+  constructor() {
+    super(); // Inizializza la parte HTMLElement ereditata.
+    const root = this.attachShadow({mode: &#x27;open&#x27;});
+    this._input = document.createElement(&#x27;input&#x27;);
+    this._input.type = &#x27;text&#x27;;
+    root.appendChild(this._input);
+  }
+}
+customElements.define(&#x27;demo-textbox&#x27;, DemoTextBox);</code></pre></div><div class="code"><div class="codebar">HTML <span>Esempio didattico</span></div><pre><code>&lt;demo-textbox&gt;&lt;/demo-textbox&gt;</code></pre></div>
+<div class="note">Questo è un passaggio didattico per chi implementa componenti. Non è ancora il textBox di Gramlot: mancano interfaccia pubblica, etichetta, eventi e integrazione con i dati. Nelle applicazioni Gramlot si dichiarano i componenti attraverso il framework.</div>
+</section><section id="shadow"><h2>04 · Dentro e fuori: lo Shadow DOM</h2>
+<p>Lo <strong>Shadow DOM</strong> è un albero interno collegato a un elemento. L’elemento esterno è chiamato <strong>host</strong>. Nel nostro esempio l’host è <code>demo-textbox</code>; dentro c’è l’input che riceve i tasti.</p>
+<div class="anatomy"><div class="host-label">Pagina · DOM esterno</div><div class="host">&lt;gnr-textbox&gt; <small>host del componente reale</small><div class="shadow">Shadow root · interno del componente<div class="inside">stile + contenitore dell’etichetta + contenuto</div><div class="inside">&lt;label&gt;Nome&lt;/label&gt;</div><div class="native">&lt;input type="text"&gt; <small>qui si scrive davvero</small></div></div></div></div>
+<p>Questa separazione aiuta a controllare struttura e stili. Un selettore CSS della pagina come <code>input { … }</code> non seleziona direttamente l’input dentro lo Shadow DOM. Alcuni valori ereditabili e le variabili CSS possono invece attraversare il confine.</p>
+<p><code>mode: 'open'</code> consente l’accesso tramite <code>element.shadowRoot</code>. Non è una misura di sicurezza: lo Shadow DOM organizza l’implementazione. <a class="source" href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM">Approfondimento: Shadow DOM</a>.</p>
+<p>Per chi scrive un’applicazione, entrare nell’albero interno per cambiare l’input crea una dipendenza dai dettagli del componente. In Gramlot si usano i parametri e i servizi pubblici; la manipolazione dell’input appartiene all’implementazione del componente.</p>
+</section><section id="interfaccia"><h2>05 · Il componente deve avere una porta di accesso</h2>
+<p>Aggiungere un input all’interno non basta. Il componente esterno deve spiegare come leggere e assegnare un valore. Una <strong>proprietà JavaScript</strong> è un valore accessibile su un oggetto, come <code>campo.value</code>. Un getter legge; un setter assegna.</p><div class="code"><div class="codebar">JavaScript <span>Esempio didattico</span></div><pre><code>// Da aggiungere alla classe didattica DemoTextBox.
+get value() {
+  return this._input.value;
+}
+set value(value) {
+  this._input.value = value == null ? &#x27;&#x27; : String(value);
+}</code></pre></div>
+<p>Ora il chiamante può usare <code>campo.value = 'Ada'</code> senza sapere dove si trovi l’input. Questo setter semplificato mostra <code>null</code> come testo vuoto e non ne conserva la distinzione: il componente Gramlot reale gestisce anche quel caso.</p>
+<p>Il confronto seguente usa il controllo HTML nativo. In un elemento personalizzato una proprietà come <code>placeholder</code> deve essere esposta esplicitamente: il solo attributo non la crea.</p><table><thead><tr><th>Attributo HTML</th><th>Proprietà JavaScript</th></tr></thead><tbody><tr><td><code>placeholder="Nome"</code></td><td><code>input.placeholder = 'Nome'</code></td></tr><tr><td>Nel markup è testo o presenza/assenza</td><td>Può contenere tipi JavaScript, anche oggetti</td></tr><tr><td>Non si sincronizza da solo con una proprietà personalizzata</td><td>Il componente decide come leggerla e applicarla</td></tr></tbody></table>
+<p>Per gli attributi booleani la presenza conta: <code>disabled="false"</code> è comunque un attributo presente. Per riabilitare il controllo si rimuove l’attributo. Gramlot si occupa della traduzione dei valori dichiarati nell’applicazione.</p>
+<p>Un componente può dichiarare <code>observedAttributes</code>; il browser chiama <code>attributeChangedCallback</code> quando uno di questi attributi cambia. Il textBox reale osserva <code>value</code>, <code>placeholder</code>, <code>lbl</code>, <code>disabled</code> e <code>readonly</code> nella base condivisa. Altri parametri sono gestiti dai servizi di Gramlot.</p>
+</section><section id="eventi"><h2>06 · Come una modifica esce dal componente</h2>
+<p>Un <strong>evento</strong> è una notifica: “è successo qualcosa”. Il controllo nativo produce <code>input</code> durante le modifiche dell’utente e <code>change</code> quando una modifica viene confermata. Assegnare una proprietà da codice non equivale a una digitazione e non emette automaticamente questi eventi.</p>
+<p>Due parole descrivono il viaggio dell’evento: <code>bubbles</code> permette di risalire verso gli antenati; <code>composed</code> permette di attraversare un confine Shadow DOM. Sono due proprietà diverse.</p>
+<p>Nella base Gramlot, l’evento nativo <code>input</code> attraversa già il confine. Il <code>change</code> interno viene riemesso sull’host, per raggiungere l’ascoltatore del runtime:</p><div class="code"><div class="codebar">JavaScript <span>Estratto reale · ControlElement</span></div><pre><code>this._input.addEventListener(&#x27;change&#x27;, () =&gt; {
+  this.dispatchEvent(new this.ownerDocument.defaultView.Event(
+    &#x27;change&#x27;, {bubbles: true, composed: true}
+  ));
+});</code></pre></div>
+<p>Per un ascoltatore esterno, la destinazione dell’evento proveniente dall’interno viene presentata come l’host: è il <strong>retargeting</strong>. Gramlot può così riconoscere il componente e leggere la sua proprietà <code>value</code>, senza cercare l’input nello Shadow DOM.</p>
+</section><section id="reale"><h2>07 · Il textBox reale è piccolo perché eredita molto</h2>
+<p>Nel file <code>collections/inputs.js</code> la classe specifica è questa:</p><div class="code"><div class="codebar">JavaScript <span>Estratto reale · inputs.js</span></div><pre><code>class GnrTextBox extends GnrInput { get inputType() { return &#x27;text&#x27;; } }</code></pre></div>
+<p>Quella riga non contiene tutto il componente. <code>GnrInput</code> è il nome locale con cui il modulo usa <code>ControlElement</code>:</p><div class="code"><div class="codebar">JavaScript <span>Estratto reale · inputs.js</span></div><pre><code>const {ControlElement: GnrInput} = getComponentBases();</code></pre></div>
+<table><thead><tr><th>Livello</th><th>Compito</th></tr></thead><tbody>
+<tr><td><code>HTMLElement</code></td><td>La base fornita dal browser</td></tr>
+<tr><td><code>GramlotElement</code></td><td>Connessione, disconnessione e rilascio delle risorse registrate</td></tr>
+<tr><td><code>Decorated</code></td><td>Collega il servizio che presenta etichetta e contenitore</td></tr>
+<tr><td><code>FieldState</code></td><td>Espone la presentazione degli stati del campo, per esempio errore e attesa</td></tr>
+<tr><td><code>ControlElement</code></td><td>Crea input e Shadow DOM, espone value, inoltra attributi ed eventi, gestisce null e decorazione</td></tr>
+<tr><td><code>GnrTextBox</code></td><td>Sceglie un input di tipo testo</td></tr>
+</tbody></table>
+<p><code>Decorated</code> e <code>FieldState</code> sono <strong>mixin</strong>: funzioni che ricevono una classe base e restituiscono una classe con una capacità aggiuntiva. L’espressione reale <code>FieldState(Decorated(GramlotElement))</code> costruisce questa combinazione. Non occorre conoscerla per usare <code>root.textBox</code>; serve a chi mantiene il framework.</p>
+<p>Il browser chiama <code>connectedCallback</code> quando un elemento entra nel documento e <code>disconnectedCallback</code> quando ne esce. La base evita di installare due volte la connessione attiva e rilascia i funzioni di pulizia (disposer) registrate con <code>ownConnection</code>. Un elemento può essere rimosso e reinserito: costruzione e connessione non sono sinonimi.</p>
+</section><section id="manifesto"><h2>08 · Due registrazioni: browser e Gramlot</h2>
+<p>Il browser deve conoscere il tag; Gramlot deve conoscere il nome da usare nelle dichiarazioni. Sono due associazioni complementari.</p><div class="code"><div class="codebar">JavaScript <span>Registrazione nel browser</span></div><pre><code>customElements.define(&#x27;gnr-textbox&#x27;, GnrTextBox);</code></pre></div>
+<p>Il catalogo attuale contiene questa descrizione, riportata integralmente per textBox:</p><div class="code"><div class="codebar">JSON <span>Descrizione reale · builtin-components.json</span></div><pre><code>{
+  &quot;name&quot;: &quot;textBox&quot;,
+  &quot;tag&quot;: &quot;gnr-textbox&quot;,
+  &quot;subTags&quot;: &quot;&quot;,
+  &quot;pythonGroup&quot;: &quot;InputDeclarations&quot;,
+  &quot;capabilities&quot;: [
+    &quot;control&quot;,
+    &quot;decoration&quot;,
+    &quot;null&quot;,
+    &quot;field-state&quot;
+  ]
+}</code></pre></div>
+<p><code>name</code> è il nome dell’API di authoring; <code>tag</code> è il tag del browser. <code>pythonGroup</code> indica il gruppo di dichiarazioni Python da generare. <code>subTags</code> è vuoto: textBox non dichiara contenuto Source figlio. <code>capabilities</code> elenca capacità; non ne implementa il comportamento.</p><div class="code"><div class="codebar">JavaScript <span>Registrazione della collezione Gramlot</span></div><pre><code>registerComponentCollection(&#x27;inputs&#x27;, {
+  components: builtinComponents(&#x27;inputs&#x27;),
+  defineComponents
+});</code></pre></div>
+<p>Il registro costruisce la grammatica e l’associazione <code>render_tag</code>, attiva la funzione che definisce gli elementi e verifica che i tag siano stati registrati. Associa inoltre la descrizione alla classe con <code>gramlotComponent</code>.</p>
+<div class="note"><strong>Limite attuale del manifesto:</strong> per textBox questa scheda contiene identità e capacità, ma non ancora una descrizione completa di parametri ed esempi. Questi capitoli ricostruiscono il contratto leggendo codice e test. Il documento non attribuisce al manifesto informazioni che oggi non contiene.</div>
+</section><section id="python"><h2>09 · Come si usa: Python prima di tutto</h2>
+<p>Chi scrive una pagina Gramlot non deve definire una classe JavaScript per ogni campo. Dichiara il componente sotto un nodo padre:</p><div class="code"><div class="codebar">Python <span>Pagina Gramlot · esempio completo di authoring</span></div><pre><code>from gramlot.page import WebPage
+
+class Page(WebPage):
+    def main(self, root):
+        root.data(&#x27;nome&#x27;, &#x27;Ada&#x27;)
+        root.textBox(value=&#x27;^nome&#x27;, lbl=&#x27;Nome&#x27;,
+                     placeholder=&#x27;Scrivi il nome&#x27;)
+        root.div(&#x27;^nome&#x27;)</code></pre></div>
+<p><code>root</code> è il punto in cui aggiungere gli elementi. <code>data</code> dichiara il dato iniziale. <code>textBox</code> aggiunge un nodo alla Source Bag. <code>div</code> mostra il valore dello stesso dato. Per eseguire la pagina occorrono l’host e il runtime Gramlot configurati; il frammento non avvia un server.</p>
+<p>Una <strong>Bag</strong> è una struttura dati ad albero, con nodi identificati da nomi e percorsi. La <strong>Source Bag</strong> descrive la struttura della pagina. La <strong>Data Bag</strong> contiene lo stato dell’applicazione. Il binding <code>^nome</code> collega il valore del campo a un percorso nella Data Bag e reagisce alle variazioni. Non è un identificativo HTML e non è il testo da mostrare.</p>
+<p>La dichiarazione Python viene generata da <code>scripts/generate_components.py</code>. Per textBox il risultato include:</p><div class="code"><div class="codebar">Python <span>Dichiarazione generata · estratto riformattato</span></div><pre><code>@element(sub_tags=&#x27;&#x27;, _meta={
+    &#x27;webcomponent&#x27;: True, &#x27;render_tag&#x27;: &#x27;gnr-textbox&#x27;
+})
+def textBox(self, **kwargs): ...</code></pre></div>
+<p>I puntini non indicano che manca l’implementazione grafica: questo metodo dichiara un elemento della grammatica. Python costruisce il Source; il trasporto TYTX lo conserva per il browser; il runtime realizza il componente. <code>**kwargs</code> accetta opzioni: non significa che qualsiasi nome inventato acquisti un comportamento.</p>
+<p>Un autore JavaScript usa lo stesso vocabolario, nel corpo della costruzione della pagina:</p><div class="code"><div class="codebar">JavaScript <span>Authoring Gramlot JS · con dati già inizializzati</span></div><pre><code>root.textBox({value: &#x27;^nome&#x27;, lbl: &#x27;Nome&#x27;});</code></pre></div>
+<p>Il nome del componente resta <code>textBox</code>; il tag resta <code>gnr-textbox</code>. L’oggetto che coordina la pagina si chiama invece <code>gramlot</code>. Sono tre nomi con tre ruoli diversi.</p>
+</section><section id="viaggio"><h2>10 · Il viaggio completo di un valore</h2>
+<div class="flow"><span>Python / JS</span><b>→</b><span>nodo Source textBox</span><b>→</b><span>host gnr-textbox</span><b>→</b><span>input nativo</span></div>
+<p>All’avvio Gramlot legge il binding, risolve il percorso e fornisce al componente il valore corrente. Il setter del componente lo porta sull’input. Quando l’utente modifica il testo, il percorso si percorre nell’altra direzione.</p>
+<ol><li>L’utente scrive nell’input interno.</li><li>Il componente espone il valore e gli eventi sul proprio host.</li><li>L’ascoltatore delegato di Gramlot riconosce l’elemento e il nodo Source.</li><li>La politica di aggiornamento decide se confermare adesso.</li><li>Gli eventuali servizi di campo verificano il valore.</li><li>Il valore confermato arriva nella Data Bag; i binding dipendenti si aggiornano.</li></ol>
+<p><strong>Per impostazione predefinita il textBox conferma alla perdita del focus</strong>, dopo una modifica, attraverso l’evento <code>change</code>. Il testo digitato può quindi essere diverso dal dato già confermato. Con <code>live=True</code> si richiede l’aggiornamento durante la digitazione:</p><div class="code"><div class="codebar">Python <span>Esempio didattico</span></div><pre><code>root.textBox(value=&#x27;^nome&#x27;, lbl=&#x27;Nome&#x27;, live=True)</code></pre></div>
+<p>Il parametro storico <code>updateOn</code> rimane un fallback; il codice attuale dà precedenza a <code>live</code> quando è specificato. “Live” regola la conferma dell’input, non crea il binding e non cambia il momento in cui Python viene eseguito.</p>
+<p>Se un aggiornamento dell’attributo <code>value</code> arriva mentre l’input interno ha il focus, la base protegge il testo in corso di digitazione. Non va generalizzato a qualsiasi assegnazione: il setter pubblico scrive sul controllo. È importante distinguere il percorso usato dal runtime da una modifica diretta fatta da codice.</p>
+<div class="note">Nella Source Bag un textBox rimane <strong>un solo nodo</strong>. Label, contenitori e input del suo Shadow DOM non diventano figli Source. Una recipe, invece, compone più nodi Source: incapsulamento del componente e riuso della composizione sono concetti diversi.</div>
+</section><section id="parametri"><h2>11 · Le operazioni di ogni giorno</h2>
+<table><thead><tr><th>Parametro</th><th>Uso</th><th>Esempio Python</th></tr></thead><tbody>
+<tr><td>value</td><td>Valore letterale oppure binding</td><td><code>value='^nome'</code></td></tr>
+<tr><td>lbl</td><td>Etichetta del campo</td><td><code>lbl='Nome'</code></td></tr>
+<tr><td>placeholder</td><td>Suggerimento nel campo vuoto</td><td><code>placeholder='Scrivi qui'</code></td></tr>
+<tr><td>disabled</td><td>Disabilita l’interazione</td><td><code>disabled=True</code></td></tr>
+<tr><td>readonly</td><td>Impedisce di modificare il testo</td><td><code>readonly=True</code></td></tr>
+<tr><td>live</td><td>Conferma durante la digitazione</td><td><code>live=True</code></td></tr>
+<tr><td>default</td><td>Valore iniziale quando il dato manca</td><td><code>default='Ada'</code></td></tr>
+<tr><td>validate_notnull</td><td>Richiede un valore tramite la validazione Gramlot</td><td><code>validate_notnull=True</code></td></tr>
+</tbody></table>
+<p><code>default</code> non è un comando “reimposta sempre”: un dato già presente non va cancellato dalla creazione di un altro campo. Per riutilizzare una composizione si passa un contenitore con un <code>datapath</code>, cioè un percorso di base:</p><div class="code"><div class="codebar">Python <span>Composizione riutilizzabile, non nuovo Web Component</span></div><pre><code>def persona(parent, percorso):
+    box = parent.div(datapath=percorso)
+    box.textBox(value=&#x27;^.nome&#x27;, lbl=&#x27;Nome&#x27;)
+    box.div(&#x27;^.nome&#x27;)
+
+# Nel main di una pagina, dopo aver inizializzato i dati:
+persona(root, &#x27;cliente&#x27;)
+persona(root, &#x27;fornitore&#x27;)</code></pre></div>
+<p>Il punto iniziale in <code>^.nome</code> rende il percorso relativo al contenitore. Le due istanze lavorano su dati diversi. Nessun accesso manuale agli input è necessario.</p>
+<p>Per un’azione locale si modifica il dato attraverso Gramlot:</p><div class="code"><div class="codebar">Python <span>Esempio didattico</span></div><pre><code>root.button(&#x27;Imposta Ada&#x27;, action=&quot;this.SET(&#x27;nome&#x27;, &#x27;Ada&#x27;);&quot;)</code></pre></div>
+<p><code>action</code> contiene codice JavaScript eseguito nel browser; <code>this</code> è il nodo Source dell’azione. Il runtime offre anche il coordinatore <code>gramlot</code>, per esempio per pubblicare un messaggio. Il metodo Python non viene richiamato a ogni tasto.</p>
+</section><section id="null-validazione"><h2>12 · Null, errori e aspetto: servizi condivisi</h2>
+<p>Un input nativo mostra testo e non può rappresentare direttamente la differenza tra <code>null</code> e stringa vuota. La base usa <code>InputNullState</code> per conservarla. In Python il valore nullo è <code>None</code>; in JavaScript è <code>null</code>. Un campo vuoto a video non basta, da solo, a dire quale dato sia memorizzato.</p>
+<p>La classe textBox non contiene un motore di validazione completo. <code>FormField</code> e <code>Validator</code> gestiscono bozza, verifiche e conferma secondo il contesto. Il mixin <code>FieldState</code> presenta il risultato: <code>aria-invalid</code>, <code>aria-busy</code>, messaggi e stile del campo. Questa divisione consente ad altri controlli di condividere le stesse regole.</p><div class="code"><div class="codebar">Python <span>Esempio didattico</span></div><pre><code>root.textBox(value=&#x27;^nome&#x27;, lbl=&#x27;Nome&#x27;, validate_notnull=True)</code></pre></div>
+<p>La decorazione è gestita da <code>WidgetLabel</code>, non ripetuta nella sottoclasse textBox. L’etichetta reale è associata all’input interno con <code>for="f"</code> e <code>id="f"</code>; ciascuno Shadow DOM ha il proprio ambito. Il placeholder non sostituisce questa associazione.</p>
+<p>Per l’aspetto, la base espone variabili CSS come <code>--field-bg</code>, <code>--field-border</code> e <code>--field-focus-border</code>. Si usano gli strumenti di stile Gramlot, senza cercare il controllo interno:</p><div class="code"><div class="codebar">Python <span>Esempio didattico</span></div><pre><code>root.css(&#x27;.accent-field&#x27;, {
+    &#x27;--field-border&#x27;: &#x27;#397b83&#x27;,
+    &#x27;--field-focus-border&#x27;: &#x27;#15575e&#x27;
+})
+root.textBox(value=&#x27;^nome&#x27;, lbl=&#x27;Nome&#x27;, class_=&#x27;accent-field&#x27;)</code></pre></div>
+<p><code>class_</code> è la forma Python del nome HTML <code>class</code>. La variabile CSS eredita il valore nell’interno del componente. Un cambiamento estetico non richiede una nuova classe Web Component.</p>
+</section><section id="modificare"><h2>13 · Dove intervenire quando vuoi cambiare qualcosa</h2>
+<table><thead><tr><th>Obiettivo</th><th>Punto in cui operare</th></tr></thead><tbody>
+<tr><td>Un campo della tua pagina con etichetta diversa</td><td>Parametri di <code>root.textBox</code></td></tr>
+<tr><td>Più controlli riutilizzabili insieme</td><td>Funzione Python o recipe Gramlot</td></tr>
+<tr><td>Una regola condivisa di conferma o validazione</td><td>Servizio del framework responsabile, con test</td></tr>
+<tr><td>Un comportamento specifico dell’editor</td><td>Classe del componente, riusando le basi</td></tr>
+<tr><td>Un nuovo componente dichiarabile da Python</td><td>Implementazione, registrazione e descrizione, quindi generazione e verifica</td></tr>
+</tbody></table>
+<p>Per costruire un nuovo controllo sullo stesso modello: si sceglie l’elemento nativo, si espongono proprietà ed eventi, si riusano le capacità condivise, si registra il tag nel browser e si descrive il nome per Gramlot. Infine si verificano creazione, modifica dei dati, interazione, errori, rimozione e reinserimento.</p>
+<p>Non si modifica direttamente <code>src/gramlot/grammar/inputs.py</code>: è un file generato. Non si copia tutta la base per ottenere una variante. Non si aggiunge un osservatore manuale della Data Bag dentro ogni campo se il binding è già responsabilità del runtime.</p>
+<details><summary>Controlla se il modello è chiaro: quattro domande</summary><p><strong>Chi riceve i tasti?</strong> L’input nativo nello Shadow DOM.</p><p><strong>Chi collega il campo a persona.nome?</strong> Il runtime Gramlot attraverso il binding nel Source.</p><p><strong>Dove sono label e input nell’inspector Source?</strong> Non sono nodi Source figli: sono l’implementazione interna del componente.</p><p><strong>Per cambiare l’etichetta devo scrivere JavaScript?</strong> No: si passa <code>lbl</code> nella dichiarazione Python.</p></details>
+</section><section id="fonti"><h2>14 · Mappa del codice e confini di questa guida</h2>
+<p>Questa guida fotografa il codice locale di Gramlot <strong>0.1.5</strong>, letto il <strong>14 settembre 2026</strong>. Non attribuisce al manifesto API future e non descrive una release pubblicata. Gli esempi di componente minimale sono intenzionalmente didattici; gli estratti indicati come reali derivano dai file seguenti.</p>
+<table><thead><tr><th>File nel repository</th><th>Cosa leggere</th></tr></thead><tbody>
+<tr><td>js/dom/src/collections/inputs.js</td><td>GnrTextBox, alias GnrInput, registrazione dei tag</td></tr>
+<tr><td>js/dom/src/components/bases.js</td><td>GramlotElement, ControlElement, Decorated, FieldState</td></tr>
+<tr><td>js/dom/src/components/builtin-components.json</td><td>Descrizione attuale di textBox</td></tr>
+<tr><td>js/dom/src/components/registry.js</td><td>Associazione tra descrizione, grammatica e implementazione</td></tr>
+<tr><td>src/gramlot/grammar/inputs.py</td><td>Dichiarazione Python generata</td></tr>
+<tr><td>scripts/generate_components.py</td><td>Generatore del catalogo</td></tr>
+<tr><td>js/dom/src/application.js</td><td>_enableInput e mutate: ingresso degli eventi e aggiornamento dati</td></tr>
+<tr><td>js/dom/src/input-null-state.js</td><td>Distinzione null/testo vuoto</td></tr>
+<tr><td>js/dom/src/components/field-state.js</td><td>Presentazione accessibile degli errori</td></tr>
+<tr><td>js/dom/src/forms/field.js</td><td>Gestione del campo e conferma</td></tr>
+<tr><td>js/dom/tests/writeback.test.js</td><td>Tempi di conferma e aggiornamento dei dati</td></tr>
+<tr><td>tests/test_component_alpha.py</td><td>Coerenza del catalogo e delle dichiarazioni generate</td></tr>
+</tbody></table>
+<p>Per proseguire con la terminologia del browser: <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components">panoramica MDN sui Web Components</a>. Per Gramlot, il codice e i test indicati sono il riferimento concreto di questo documento.</p>
+</section><p class="footer">Documento autonomo · Nessuna dipendenza esterna per la lettura · Stampabile dal browser</p></main></body></html>

@@ -18,6 +18,8 @@ existing generated files, or `--port` to choose another port.
 | Triangle Data RPC and remote Source | /page/triangle/ |
 | Hello page collection | /hello/ |
 | Shared grid and chartBox with structure palette | /charts/chart/ |
+| Full editable grid playground | /grid-editor/playground/ |
+| Grid editor examples and Python source | /grid-editor/index/ |
 | Python OpenAPI Explorer | /openapi/ |
 | States, localities and customers (optional DB) | /database/states/ |
 | Synthetic products and quotations API | /api/products, /api/quote |
@@ -65,7 +67,8 @@ python docs/examples/serve.py --genropy-instance test_invoice_pg
 
 Everything then runs at `http://127.0.0.1:8051/`, including
 `/database/states/`. Without that option the tree indicates that DB is not enabled.
-See [DB setup](states-grid/README.md). The local previous 8052 preview was stopped;
+See the [gramlot-fastapi Genropy example](https://github.com/gramlot-org/gramlot-fastapi/tree/develop/src/gramlot_fastapi/_examples/genropy).
+The local previous 8052 preview was stopped;
 the unified host now uses 8051. No database dependency was added to Gramlot core.
 
 Verified: host route/recipe tests, rebuilt 24 lessons and 31 gallery pages, and

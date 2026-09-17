@@ -1,3 +1,4 @@
+import {validationMessageStyle} from './validation-style.js';
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
 /** Presentation only. FormField/Validator retain draft, policy and async ownership.
  * Native elements and third-party adapters can use the same presenter. */
@@ -17,7 +18,7 @@ export function setFieldState(widget, {invalid = false, pending = false, issues 
                 message.id='gnr-validation-message';message.setAttribute('data-validation-message','');
                 message.setAttribute('aria-live','polite');widget.shadowRoot.appendChild(message);
                 const style=widget.ownerDocument.createElement('style');
-                style.textContent=':is(input,textarea)[aria-invalid=true]{background-color:var(--field-invalid-bg,#fff0f0)}[data-validation-message]{color:var(--field-error-color,#9e2525);font-size:12px}';
+                style.textContent=':is(input,textarea)[aria-invalid=true]{background-color:var(--field-invalid-bg,#fff0f0)}[data-validation-message]{' + validationMessageStyle + '}';
                 style.textContent += `
                     :host([validationpresentation="tooltip"]){position:relative}
                     :host([validationpresentation="tooltip"]) [data-validation-message]{
@@ -28,6 +29,7 @@ export function setFieldState(widget, {invalid = false, pending = false, issues 
                         white-space:normal;line-height:1.35;pointer-events:none;
                     }
                     :host([validationpresentation="tooltip"]) :is(#number-message,#choice-error){display:none!important}
+                    :host([validationpresentation="tooltip"]:not(:hover)) [data-validation-message]{visibility:hidden}
                 `;
                 widget.shadowRoot.appendChild(style);
             }

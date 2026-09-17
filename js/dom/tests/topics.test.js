@@ -79,7 +79,7 @@ test('nodeId switchPage commands reach the existing stack and its topic notifica
     app.dispose();
 });
 
-test('node publish/subscribe qualify names and share genro with stable anonymous identity', () => {
+test('node publish/subscribe qualify names and share gramlot with stable anonymous identity', () => {
     const app = mount();
     const owner = app.builder.source.getNodes().find(n=>n.getAttr('nodeId')==='owner');
     let seen;
@@ -119,12 +119,12 @@ test('function controllers receive trusted runtime context and topics stay appli
         subscribe_context: true,
         func: (node, args) => {
             assert.equal(args.sourceNode, node);
-            assert.equal(args.genro, app);
+            assert.equal(args.gramlot, app);
             assert.equal(args._reason, 'topic');
             assert.equal(args._topic, 'context');
         },
     }));
-    app.publish('context', {sourceNode: 'payload', genro: 'payload', _reason: 'payload', _topic: 'payload'});
+    app.publish('context', {sourceNode: 'payload', gramlot: 'payload', _reason: 'payload', _topic: 'payload'});
     assert.equal(received, 0);
     app.dispose(); other.dispose();
 });

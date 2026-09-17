@@ -12,7 +12,11 @@ HERE = Path(__file__).resolve().parent
 
 
 def catalogue(preview, database=False):
-    entries = [dict(title='Introduction', url='/', group='Tutorial')]
+    entries = [
+        dict(title='Tre siti demo', url='/hello/demos/', group='Presentazioni'),
+        dict(title='I sette scenari', url='/hello/scenarios/', group='Presentazioni'),
+        dict(title='Introduction', url='/', group='Tutorial'),
+    ]
     manifest = preview / 'navigation.json'
     if manifest.exists():
         entries.extend(json.loads(manifest.read_text()))
@@ -21,10 +25,14 @@ def catalogue(preview, database=False):
             entries.append(dict(title=item['title'], url=f"/lessons/{item['slug']}/",
                                 group='Tutorial / ' + item['group']))
     entries += [dict(title=title, url=url, group='Applications') for title, url in (
+        ('Editable grid · full playground', '/grid-editor/playground/'),
+        ('Grid editor · examples and source', '/grid-editor/index/'),
         ('Hello', '/hello/hello/'), ('Alfa', '/hello/alfa/'), ('Beta', '/hello/beta/'),
         ('Grid and chartBox', '/charts/chart/'), ('Triangle RPC', '/page/triangle/'), ('Remote Source', '/page/remote-source/'),
         ('FileSystemTree', '/page/filesystem-tree/'),
         ('Gramlot IDE', '/page/gramlot-ide/'),
+        ('Gramlot Inventory', '/page/gramlot-inventory/'),
+        ('HTML editor', '/page/html-editor/'),
         ('OpenAPI Explorer', '/openapi/'),
     )]
     entries.append(dict(title='States, localities and customers', url='/database/states/',
@@ -110,10 +118,14 @@ class ExampleNavigationShell:
         path = scope.get('path', '')
         eligible = scope['type'] == 'http' and (path == '/' or (
             path.startswith(('/lessons/', '/gallery/', '/reference/', '/builder/',
-                             '/page/', '/hello/', '/openapi/', '/database/'))
+                             '/page/', '/hello/', '/openapi/', '/database/', '/grid-editor/'))
             and (path.endswith('/') or path.endswith('/index.html'))))
         if not eligible:
             return await self.app(scope, receive, send)
+        # Static-file validators describe the unwrapped file, not this dynamic
+        # document whose runtime URLs change when the host restarts.
+        scope = dict(scope, headers=[(k, v) for k, v in scope.get('headers', [])
+                                   if k.lower() not in (b'if-none-match', b'if-modified-since')])
         start = None
         body = []
         async def intercept(message):
@@ -134,9 +146,10 @@ class ExampleNavigationShell:
                            '<div id="example-surface">')
                 existing = re.search(r'<script\b[^>]*type=[\"\']importmap[\"\'][^>]*>(.*?)</script>', html, re.S)
                 imports = json.loads(existing[1])['imports'] if existing else self.imports
-                dom_base = imports['gramlot-dom'].rsplit('/', 1)[0]
-                bootstrap = (f"import '{dom_base}/collections/layout.js';"
-                             f"import {{getCollection}} from '{dom_base}/collections.js';"
+                # Public entries work in both source and bundled distributions.
+                # gramlot-builder registers the built-in component collections.
+                bootstrap = ("import 'gramlot-builder';"
+                             "import {getCollection} from 'gramlot-dom';"
                              "getCollection('layout').defineComponents();")
                 extra = '' if existing else '<script type="importmap">' + json.dumps({'imports':imports}).replace('<', '\\u003c') + '</script>'
                 html = html.replace('</head>', extra + '<style>' + SHELL_CSS + '</style>'
@@ -145,7 +158,8 @@ class ExampleNavigationShell:
                 html = html.replace('</body>', '</div></gnr-bordercontainer></body>', 1)
                 payload = html.encode('utf-8')
                 start['headers'] = [(k,v) for k,v in start['headers']
-                                    if k.lower() not in (b'content-length', b'etag')]
+                                    if k.lower() not in (b'content-length', b'etag', b'last-modified', b'cache-control')]
+                start['headers'].append((b'cache-control', b'no-store'))
                 start['headers'].append((b'content-length', str(len(payload)).encode()))
                 await send(start)
                 await send({'type':'http.response.body', 'body':payload})

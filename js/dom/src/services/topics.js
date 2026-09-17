@@ -1,5 +1,5 @@
 // Copyright 2026 Softwell S.r.l. - SPDX-License-Identifier: Apache-2.0
-/** Application-local synchronous topics, coordinated by the genro facade. */
+/** Application-local synchronous topics, coordinated by the gramlot facade. */
 export class TopicService {
     constructor(application) {
         this.application = application;

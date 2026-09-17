@@ -1,18 +1,54 @@
-name: Publish GitHub prerelease
+name: Publish verified core distributions
 
 on:
-  push:
-    tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require the exact version tag on main
+        env:
+          RELEASE_REF: ${{ github.ref }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          git merge-base --is-ancestor HEAD origin/main
+          python - <<'PYTHON'
+          import os, tomllib
+          from pathlib import Path
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+          version = tomllib.load(open('pyproject.toml', 'rb'))['project']['version']
+          assert os.environ['RELEASE_REF'] == f'refs/tags/v{version}', 'Dispatch on the exact version tag'
+          assert Path(f'docs/release-notes-{version}.md').is_file(), 'Missing release notes'
+          request = Request(
+              f'https://api.github.com/repos/{os.environ["GH_REPO"]}/releases/tags/v{version}',
+              headers={'Authorization': f'Bearer {os.environ["GH_TOKEN"]}'},
+          )
+          try:
+              with urlopen(request, timeout=30):
+                  raise SystemExit('GitHub release already exists; rerun failed jobs for partial releases')
+          except HTTPError as error:
+              if error.code != 404:
+                  raise
+          PYTHON
   verify:
+    needs: validate
     uses: ./.github/workflows/ci.yml
   github-release:
     needs: verify
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: write
     steps:
@@ -51,4 +87,19 @@ jobs:
           sha256sum dist/* browser-dist/* > SHA256SUMS
           gh release create "$RELEASE_TAG" dist/* browser-dist/* SHA256SUMS \
             --title "Gramlot ${RELEASE_TAG#v} · pre-alpha" \
-            --notes-file docs/release-notes-0.1.3.md --prerelease --verify-tag
+            --notes-file "docs/release-notes-${RELEASE_TAG#v}.md" --prerelease --verify-tag
+
+  pypi:
+    needs: github-release
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/gramlot
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-distributions
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1

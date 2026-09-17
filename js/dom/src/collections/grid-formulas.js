@@ -101,7 +101,7 @@ function sameValue(left, right) {
     return false;
 }
 
-function addNumeric(left, right) {
+export function addNumeric(left, right) {
     if (right == null || right === '') return left;
     if (isDecimal(left) || isDecimal(right)) {
         if (getDecimalLibrary() === 'number') throw new Error('A Decimal backend is required for exact grid formulas');

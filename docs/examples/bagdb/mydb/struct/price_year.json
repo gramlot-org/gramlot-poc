@@ -1,0 +1,86 @@
+{
+  "table": "price_year",
+  "sourceTable": "invc.price_year",
+  "primaryKey": "id",
+  "fields": {
+    "__del_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__del_ts"
+    },
+    "__ins_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_ts"
+    },
+    "__ins_user": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__ins_user"
+    },
+    "__mod_ts": {
+      "dtype": "T",
+      "sourceDtype": "DH",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "__mod_ts"
+    },
+    "id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": true,
+      "nullable": false,
+      "label": "id"
+    },
+    "note": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Note"
+    },
+    "product_id": {
+      "dtype": "T",
+      "sourceDtype": "T",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Product",
+      "sourceReference": "product.id",
+      "references": "product.id"
+    },
+    "unit_price": {
+      "dtype": "T",
+      "sourceDtype": "money",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Unit Price"
+    },
+    "year": {
+      "dtype": "L",
+      "sourceDtype": "L",
+      "primaryKey": false,
+      "nullable": true,
+      "label": "Year"
+    }
+  },
+  "omittedComputedFields": [
+    {
+      "name": "product_year_key",
+      "kind": "compositeColumn"
+    },
+    {
+      "name": "price_label",
+      "kind": "formulaColumn"
+    },
+    {
+      "name": "product_description",
+      "kind": "aliasColumn"
+    }
+  ]
+}

@@ -48,6 +48,7 @@ class PageMethod:
     role: PageMethodRole
     function: Callable
     origin: type
+    proxy_path: tuple[tuple[str, type], ...] = ()
 
 
 def page_methods(page_class: type["WebPage"]) -> dict[str, PageMethod]:
@@ -56,6 +57,10 @@ def page_methods(page_class: type["WebPage"]) -> dict[str, PageMethod]:
     The first definition of a name in the MRO is final for exposure. Therefore an
     undecorated override hides an inherited marker and a redecorated override may
     deliberately select a new role. ``main`` is the sole implicit exception.
+    ``endpoint_proxies`` maps public attribute names to proxy classes. Each
+    class may register further proxies; discovery flattens this acyclic graph
+    into dotted endpoint names. Instances are supplied by page/host setup and
+    checked against the registered types during invocation.
     """
     if not isinstance(page_class, type) or not issubclass(page_class, WebPage):
         raise TypeError("page_methods expects a WebPage class")
@@ -75,7 +80,38 @@ def page_methods(page_class: type["WebPage"]) -> dict[str, PageMethod]:
             if role not in ("data", "source") or not isfunction(value):
                 raise TypeError(f"Exposed page method {name} must be an instance method")
             discovered[name] = PageMethod(name, role, value, owner)
+    _proxy_methods(page_class, discovered)
     return discovered
+
+
+def _proxy_methods(container, discovered, path=(), ancestors=()):
+    """Flatten explicit proxy registrations, rejecting cyclic type graphs."""
+    if container in ancestors:
+        raise TypeError('Endpoint proxy registrations must not contain cycles')
+    registrations = getattr(container, 'endpoint_proxies', {})
+    if not isinstance(registrations, dict):
+        raise TypeError('endpoint_proxies must be a mapping of names to classes')
+    for namespace, proxy_type in registrations.items():
+        if (not isinstance(namespace, str) or not namespace.isidentifier()
+                or namespace.startswith('_') or not isinstance(proxy_type, type)):
+            raise TypeError('Endpoint proxies require public names and registered classes')
+        proxy_path = (*path, (namespace, proxy_type))
+        prefix = '.'.join(name for name, _ in proxy_path)
+        seen = set()
+        for owner in proxy_type.__mro__:
+            for name, value in vars(owner).items():
+                if name in seen:
+                    continue
+                seen.add(name)
+                role = getattr(value, '__gramlot_page_role__', None)
+                if role is None:
+                    continue
+                if role != 'data' or not isfunction(value) or name.startswith('_'):
+                    raise TypeError('Proxy services must be public @endpoint instance methods')
+                qualified = f'{prefix}.{name}'
+                discovered[qualified] = PageMethod(
+                    qualified, role, value, owner, proxy_path)
+        _proxy_methods(proxy_type, discovered, proxy_path, (*ancestors, container))
 
 
 class WebPage:
@@ -86,6 +122,7 @@ class WebPage:
     client_setup: tuple[str, str] | None = None
     source_inspection = True
     example_view = False
+    endpoint_proxies: dict[str, type] = {}
 
     def main(self, root):
         """Populate the source tree."""

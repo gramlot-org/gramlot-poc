@@ -11,7 +11,7 @@ Run with the checkout's optional FastAPI dependencies and prepared assets:
 
 ```sh
 python scripts/prepare_assets.py
-python -m gramlot fastapi serve docs/examples/chartbox --port 8054
+gramlot-fastapi serve docs/examples/chartbox --port 8054
 ```
 
 Open `http://127.0.0.1:8054/page/chart/`. The common example host also mounts it at

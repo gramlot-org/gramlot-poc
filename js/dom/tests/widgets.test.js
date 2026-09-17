@@ -62,7 +62,7 @@ test('checkbox write-back: a change updates the checked datum', () => {
     }
     const root = document.createElement('div');
     document.body.appendChild(root);   // connect so connectedCallback runs
-    const genro = new Application(root, new CbPage('main'));
+    const gramlot = new Application(root, new CbPage('main'));
 
     const cb = root.querySelector('gnr-checkbox');
     const inner = cb.shadowRoot.querySelector('input');
@@ -71,7 +71,7 @@ test('checkbox write-back: a change updates the checked datum', () => {
     // crosses the shadow and reaches the delegated listener.
     inner.dispatchEvent(new window.Event('change', { bubbles: true }));
 
-    assert.equal(genro.data.getItem('main.f.flag'), false);
+    assert.equal(gramlot.data.getItem('main.f.flag'), false);
 });
 
 test('wcRequires() in setup (B) works like static wc_requires', () => {

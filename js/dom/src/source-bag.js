@@ -72,7 +72,7 @@ export class SourceBagNode extends BagNode {
         this._clickBlocked = false;
     }
 
-    /** Node-qualified topics share the owning application's genro coordinator. */
+    /** Node-qualified topics share the owning application's gramlot coordinator. */
     publish(message, payload) {
         const events = this.builder?.handler?.application?.events;
         if (!events) throw new Error('Source publication requires a mounted application');

@@ -14,6 +14,12 @@ class CustomBuildHook(BuildHookInterface):
         manifest_path = resources / "manifest.json"
         if not manifest_path.is_file():
             raise RuntimeError("Run npm ci --ignore-scripts in js/dom, then python scripts/prepare_assets.py")
+        browser_manifest = resources / "browser/manifest.json"
+        if not browser_manifest.is_file():
+            raise RuntimeError(
+                "Compiled browser payload is missing; run python scripts/prepare_assets.py, "
+                "then python scripts/build_browser_distribution.py"
+            )
         manifest = json.loads(manifest_path.read_text())
         for base, entries in ((root, manifest['sources']), (resources, manifest['assets'])):
             for name, digest in entries.items():

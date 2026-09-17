@@ -50,7 +50,7 @@ export function getComponentBases(Element = globalThis.HTMLElement) {
     }
     class ControlElement extends FieldState(Decorated(GramlotElement)) {
         static get observedAttributes() {
-            return ['value', 'placeholder', 'lbl', 'disabled', 'readonly'];
+            return ['value', 'placeholder', 'lbl', 'disabled', 'readonly', 'aria-label'];
         }
 
         get inputType() { return 'text'; }
@@ -131,6 +131,9 @@ export function getComponentBases(Element = globalThis.HTMLElement) {
                 if (!focused && this._input.value !== fresh) {
                     this.value = fresh;
                 }
+            } else if (name === 'aria-label') {
+                if (fresh === null) this._input.removeAttribute(name);
+                else this._input.setAttribute(name, fresh);
             } else if (name === 'placeholder') {
                 this._input.placeholder = fresh == null ? '' : fresh;
             } else if (name === 'lbl') {

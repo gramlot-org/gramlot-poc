@@ -189,9 +189,17 @@ def test_gallery_covers_the_component_catalogue_and_mounts_cases(tmp_path):
     catalogue = json.loads((output / "gallery/catalogue.json").read_text())
     for collection in catalogue["collections"]:
         for component in collection["components"]:
-            if component["name"] == "dbSelect":
-                # Requires the server-backed customer test, not a standalone frame.
-                assert (ROOT / "tests/browser/dbselect.spec.js").is_file()
+            if component["name"] in ("dbSelect", "remoteSelect", "relationTree", "fileSystemTree", "gramlotIde"):
+                # Components needing host services are covered by hosted examples;
+                # gramlotIde's complete document workflow is hosted as well.
+                if component["name"] == "dbSelect":
+                    assert (ROOT / "tests/browser/dbselect.spec.js").is_file()
+                elif component["name"] == "fileSystemTree":
+                    assert (ROOT / "docs/examples/triangle-rpc/pages/filesystem-tree.py").is_file()
+                    assert (ROOT / "tests/test_rpc_resolvers.py").is_file()
+                else:
+                    assert (ROOT / "docs/examples/triangle-rpc/pages/gramlot-ide.py").is_file()
+                    assert (ROOT / "js/dom/tests/ide-documents.test.js").is_file()
                 continue
             page = output / "gallery" / collection["name"] / component["name"] / "index.html"
             content = page.read_text()

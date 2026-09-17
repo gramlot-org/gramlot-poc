@@ -49,3 +49,15 @@ def test_legacy_structure_authoring_is_plain_bag_on_transport():
     assert result.get_node('view_0.rows_0.cell_0').attr['width'] == '90px'
     assert result.get_node('view_0.rows_0.cell_1').attr['width'] == 0
     assert result.get_item('view_0.rows_0.cell_0') == ''
+def test_columnsets_keep_flat_cells_and_defaults():
+    from gramlot.grid import GridStruct
+    struct = GridStruct()
+    rows = struct.view().rows()
+    group = rows.columnset('amounts', name='Amounts', cells_width=90,
+                           columns=[dict(field='quantity', dtype='L', totalize=True)])
+    group.cell('price', width=110, dtype='N')
+    assert struct.get_item('info.columnsets').get_node('amounts').attr['name'] == 'Amounts'
+    assert len(rows) == 2
+    assert rows.get_node('cell_0').attr['columnset'] == 'amounts'
+    assert rows.get_node('cell_0').attr['width'] == 90
+    assert rows.get_node('cell_1').attr['width'] == 110

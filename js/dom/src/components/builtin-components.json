@@ -139,15 +139,36 @@
             "null",
             "field-state"
           ],
-          "docline": "Select a record identity through an explicit database lookup endpoint.",
+          "docline": "Select a database identity through a configured minimum service or an explicit endpoint.",
           "serverRequired": true,
           "parameters": [
             {
+              "name": "dbtable",
+              "type": "string",
+              "required": false,
+              "default": null,
+              "docline": "Configured logical table for the standard service. Requires a page with DbPageMixin and a configured DbHandler service."
+            },
+            {
+              "name": "ignoreCase",
+              "type": "boolean | Data binding",
+              "required": false,
+              "default": true,
+              "docline": "Standard service matching policy. SQLite uses Unicode casefold when true and exact case when false."
+            },
+            {
+              "name": "limit",
+              "type": "integer | Data binding",
+              "required": false,
+              "default": 10,
+              "docline": "Standard service result limit, from 1 to 100. Prefix matching runs first; containment is tried only when no prefix matches."
+            },
+            {
               "name": "rpcmethod",
               "type": "@endpoint method | logical method name",
-              "required": true,
+              "required": false,
               "default": null,
-              "docline": "Explicitly exposed data endpoint. Python accepts the decorated bound method or its logical name."
+              "docline": "Explicit endpoint for existing providers. When omitted, Python authoring requires dbtable and uses dbhandler.dbselect."
             },
             {
               "name": "value",
@@ -271,13 +292,14 @@
             "At most one provider request is in flight per SourceNode. Another request is refused with busy feedback, without queue or replay. Obsolete results are discarded. Clearing value invalidates cached choices and pending results.",
             "Providers must implement both text search and exact identity lookup. No SQL/table inference, automatic paging, legacy headers/data response, or multi-column popup is provided.",
             "These metadata describe the current runtime; they do not introduce strict parameter type validation.",
-            "The example requires the optional FastAPI\u2013GenroPy host and test_invoice_pg model. The component itself is database-agnostic; the endpoint owns database access and authorization."
+            "The example requires the optional FastAPI\u2013GenroPy host and test_invoice_pg model. The component itself is database-agnostic; the endpoint owns database access and authorization.",
+            "The new Python dbtable path is an experimental minimum service. Its SQLite adapter is read-only and searches the configured caption column. Advanced options such as auxColumns are rejected; Genropy-specific capabilities remain separate. Existing explicit-rpcmethod providers retain their own contracts."
           ],
           "examples": [
             {
               "title": "Minimal dbSelect",
               "language": "python",
-              "code": "from gramlot.contrib.fastapi_genropy import GenropyPage\nfrom gramlot.page import endpoint\n\n\nclass Page(GenropyPage):\n    def main(self, root):\n        root.dbSelect(value='^customer_id', rpcmethod=self.customers, lbl='Customer')\n\n    @endpoint\n    def customers(self, _querystring='', _id=None):\n        where = '$id=:key' if _id is not None else '$account_name ILIKE :text'\n        rows = self.db.table('invc.customer').query(\n            columns='$id,$account_name', where=where, key=_id,\n            text=f'%{_querystring}%', order_by='$account_name,$id', limit=10).fetch()\n        return dict(self.selection_result(rows, identifier='id'), caption='account_name')\n"
+              "code": "from gramlot_fastapi.genropy import GenropyPage\nfrom gramlot.page import endpoint\n\n\nclass Page(GenropyPage):\n    def main(self, root):\n        root.dbSelect(value='^customer_id', rpcmethod=self.customers, lbl='Customer')\n\n    @endpoint\n    def customers(self, _querystring='', _id=None):\n        where = '$id=:key' if _id is not None else '$account_name ILIKE :text'\n        rows = self.db.table('invc.customer').query(\n            columns='$id,$account_name', where=where, key=_id,\n            text=f'%{_querystring}%', order_by='$account_name,$id', limit=10).fetch()\n        return dict(self.selection_result(rows, identifier='id'), caption='account_name')\n"
             }
           ]
         },
